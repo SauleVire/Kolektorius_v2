@@ -6908,11 +6908,11 @@ Mating wall wart : TOL-00298 (and others)</description>
 <part name="X1" library="con-molex" deviceset="22-23-2031" device="" value="GND D2 VCC"/>
 <part name="X2" library="con-molex" deviceset="22-23-2031" device="" value="GND D9 VCC"/>
 <part name="X3" library="con-molex" deviceset="22-23-2031" device="" value="GND A3 VCC"/>
-<part name="S1" library="switch-omron" deviceset="10-XX" device=""/>
-<part name="S2" library="switch-omron" deviceset="10-XX" device=""/>
-<part name="S3" library="switch-omron" deviceset="10-XX" device=""/>
-<part name="S4" library="switch-omron" deviceset="10-XX" device=""/>
-<part name="S5" library="switch-omron" deviceset="10-XX" device=""/>
+<part name="S1" library="switch-omron" deviceset="10-XX" device="" value="Right"/>
+<part name="S2" library="switch-omron" deviceset="10-XX" device="" value="Up"/>
+<part name="S3" library="switch-omron" deviceset="10-XX" device="" value="Down"/>
+<part name="S4" library="switch-omron" deviceset="10-XX" device="" value="Left"/>
+<part name="S5" library="switch-omron" deviceset="10-XX" device="" value="Select"/>
 <part name="X5" library="con-molex" deviceset="22-23-2041" device="" value="GND A1   A2 VCC"/>
 <part name="T1" library="transistor" deviceset="BC337" device=""/>
 <part name="R6" library="resistor" deviceset="R-EU_" device="0207/10" value="3k3"/>
@@ -6954,11 +6954,26 @@ Mating wall wart : TOL-00298 (and others)</description>
 <instance part="X3" gate="-1" x="177.8" y="99.06"/>
 <instance part="X3" gate="-2" x="177.8" y="96.52"/>
 <instance part="X3" gate="-3" x="177.8" y="93.98"/>
-<instance part="S1" gate="1" x="208.28" y="121.92" rot="R270"/>
-<instance part="S2" gate="1" x="208.28" y="109.22" rot="R270"/>
-<instance part="S3" gate="1" x="208.28" y="96.52" rot="R270"/>
-<instance part="S4" gate="1" x="208.28" y="83.82" rot="R270"/>
-<instance part="S5" gate="1" x="208.28" y="71.12" rot="R270"/>
+<instance part="S1" gate="1" x="208.28" y="121.92" smashed="yes" rot="R270">
+<attribute name="NAME" x="205.74" y="128.27" size="1.778" layer="95"/>
+<attribute name="VALUE" x="196.215" y="120.65" size="1.778" layer="96"/>
+</instance>
+<instance part="S2" gate="1" x="208.28" y="109.22" smashed="yes" rot="R270">
+<attribute name="NAME" x="205.74" y="115.57" size="1.778" layer="95"/>
+<attribute name="VALUE" x="198.755" y="107.95" size="1.778" layer="96"/>
+</instance>
+<instance part="S3" gate="1" x="208.28" y="96.52" smashed="yes" rot="R270">
+<attribute name="NAME" x="205.74" y="102.87" size="1.778" layer="95"/>
+<attribute name="VALUE" x="193.675" y="95.25" size="1.778" layer="96"/>
+</instance>
+<instance part="S4" gate="1" x="208.28" y="83.82" smashed="yes" rot="R270">
+<attribute name="NAME" x="205.74" y="90.17" size="1.778" layer="95"/>
+<attribute name="VALUE" x="193.675" y="82.55" size="1.778" layer="96"/>
+</instance>
+<instance part="S5" gate="1" x="208.28" y="71.12" smashed="yes" rot="R270">
+<attribute name="NAME" x="205.74" y="77.47" size="1.778" layer="95"/>
+<attribute name="VALUE" x="193.675" y="72.39" size="1.778" layer="96"/>
+</instance>
 <instance part="X5" gate="-1" x="93.98" y="55.88"/>
 <instance part="X5" gate="-2" x="93.98" y="53.34"/>
 <instance part="X5" gate="-3" x="93.98" y="50.8"/>

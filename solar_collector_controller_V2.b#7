@@ -2250,8 +2250,10 @@ design rules under a new name.</description>
 </signal>
 <signal name="D2">
 <contactref element="ARDUINO_PRO_MINI_1" pad="8"/>
-<contactref element="ETHERNET" pad="2"/>
-<wire x1="7.62" y1="20.32" x2="11.43" y2="41.91" width="0" layer="19" extent="1-1"/>
+<contactref element="R4" pad="2"/>
+<contactref element="X3" pad="2"/>
+<wire x1="7.62" y1="20.32" x2="11.43" y2="46.99" width="0" layer="19" extent="1-1"/>
+<wire x1="16.51" y1="7.62" x2="7.62" y2="20.32" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="D3">
 <contactref element="ARDUINO_PRO_MINI_1" pad="7"/>
@@ -2280,8 +2282,8 @@ design rules under a new name.</description>
 </signal>
 <signal name="D10">
 <contactref element="ARDUINO_PRO_MINI_2" pad="12"/>
-<contactref element="R1" pad="2"/>
-<wire x1="22.86" y1="2.54" x2="20.32" y2="36.83" width="0" layer="19" extent="1-1"/>
+<contactref element="ETHERNET" pad="7"/>
+<wire x1="22.86" y1="2.54" x2="19.05" y2="39.37" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="DTR">
 <contactref element="JP1" pad="1"/>
@@ -2299,13 +2301,6 @@ design rules under a new name.</description>
 <signal name="N$2">
 <contactref element="ARDUINO_PRO_MINI_2" pad="4"/>
 </signal>
-<signal name="VCC-TS">
-<contactref element="X2" pad="3"/>
-<contactref element="X3" pad="3"/>
-<contactref element="X1" pad="3"/>
-<wire x1="24.13" y1="46.99" x2="34.29" y2="46.99" width="0" layer="19" extent="1-1"/>
-<wire x1="13.97" y1="46.99" x2="24.13" y2="46.99" width="0" layer="19" extent="1-1"/>
-</signal>
 <signal name="VCC">
 <contactref element="R2" pad="1"/>
 <contactref element="R3" pad="1"/>
@@ -2317,15 +2312,21 @@ design rules under a new name.</description>
 <contactref element="R10" pad="2"/>
 <contactref element="IC1" pad="3"/>
 <contactref element="LCD1602" pad="2"/>
-<wire x1="41.91" y1="30.48" x2="46.99" y2="46.99" width="0" layer="19" extent="1-1"/>
-<wire x1="29.8704" y1="35.7886" x2="41.91" y2="30.48" width="0" layer="19" extent="1-1"/>
+<contactref element="X3" pad="3"/>
+<contactref element="X2" pad="3"/>
+<contactref element="X1" pad="3"/>
+<wire x1="34.29" y1="46.99" x2="46.99" y2="46.99" width="0" layer="19" extent="1-1"/>
+<wire x1="24.13" y1="46.99" x2="34.29" y2="46.99" width="0" layer="19" extent="1-1"/>
+<wire x1="13.97" y1="46.99" x2="24.13" y2="46.99" width="0" layer="19" extent="1-1"/>
+<wire x1="29.8704" y1="35.7886" x2="34.29" y2="46.99" width="0" layer="19" extent="1-1"/>
+<wire x1="2.54" y1="40.64" x2="13.97" y2="46.99" width="0" layer="19" extent="1-1"/>
+<wire x1="41.91" y1="30.48" x2="29.8704" y2="35.7886" width="0" layer="19" extent="1-1"/>
 <wire x1="16.51" y1="33.02" x2="29.8704" y2="35.7886" width="0" layer="19" extent="1-1"/>
 <wire x1="16.51" y1="17.78" x2="16.51" y2="33.02" width="0" layer="19" extent="1-1"/>
 <wire x1="13.97" y1="17.78" x2="16.51" y2="17.78" width="0" layer="19" extent="1-1"/>
 <wire x1="11.43" y1="7.62" x2="13.97" y2="17.78" width="0" layer="19" extent="1-1"/>
 <wire x1="2.54" y1="7.62" x2="11.43" y2="7.62" width="0" layer="19" extent="1-1"/>
 <wire x1="25.4" y1="1.27" x2="11.43" y2="7.62" width="0" layer="19" extent="1-1"/>
-<wire x1="2.54" y1="40.64" x2="16.51" y2="33.02" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$1">
 <contactref element="R5" pad="2"/>
@@ -2378,8 +2379,8 @@ design rules under a new name.</description>
 </signal>
 <signal name="D8">
 <contactref element="ARDUINO_PRO_MINI_1" pad="2"/>
-<contactref element="ETHERNET" pad="7"/>
-<wire x1="7.62" y1="5.08" x2="19.05" y2="39.37" width="0" layer="19" extent="1-1"/>
+<contactref element="R1" pad="2"/>
+<wire x1="7.62" y1="5.08" x2="20.32" y2="36.83" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="D13">
 <contactref element="ETHERNET" pad="6"/>

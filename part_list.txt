@@ -1,0 +1,42 @@
+Partlist
+
+Exported from solar_collector_controller_V2.brd at 2014-01-08 23:20:30
+
+EAGLE Version 6.3.0 Copyright (c) 1988-2012 CadSoft
+
+Assembly variant: 
+
+Part               Value                 Package             Library              Position (mm)         Orientation
+
+ARDUINO_PRO_MINI_1                       1X12                SparkFun             (7.62 2.54)           R90
+ARDUINO_PRO_MINI_2                       1X12                SparkFun             (22.86 30.48)         R270
+ETHERNET           ENC25J60              AVR_ICSP            SparkFun-Connectors  (27.305 15.875)       R180
+IC1                REG1117               SOT223              burr-brown           (38.1 14.605)         R270
+J1                 POWER                 POWER_JACK_PTH_LOCK SparkFun-Connectors  (52.705 4.445)        R90
+JP1                DTR    TX  RX VCC GDN 1X06                SparkFun             (8.89 33.02)          R0
+JP2                                      1X02                SparkFun             (20.32 19.05)         R90
+JP3                                      1X02                SparkFun             (33.02 1.905)         R0
+JP4                                      1X03                SparkFun-Connectors  (15.24 2.54)          R0
+LCD1602                                  16P-2.54            Connector_seedstudio (2.54 43.815)         R270
+R1                 2k2                   0207/10             resistor             (11.43 11.43)         R270
+R2                  4k7                  0207/10             resistor             (13.97 11.43)         R90
+R3                 4k7                   0207/10             resistor             (16.51 11.43)         R270
+R4                          4k7          0207/10             resistor             (19.05 11.43)         R270
+R5                 10k                   RTRIM64W            resistor             (10.16 41.275)        R270
+R6                 3k3                   0207/10             resistor             (31.75 21.59)         R90
+R7                 1k                    0207/10             resistor             (22.225 38.735)       R180
+R8                 620                   0207/10             resistor             (22.225 36.195)       R0
+R9                 330                   0207/10             resistor             (22.225 41.275)       R180
+R10                2k                    0207/10             resistor             (26.035 29.21)        R90
+S1                                       B3F-10XX            switch-omron         (37.465 40.005)       R180
+S2                                       B3F-10XX            switch-omron         (31.75 31.115)        R90
+S3                                       B3F-10XX            switch-omron         (45.72 31.115)        R90
+S4                                       B3F-10XX            switch-omron         (38.735 31.115)       R90
+S5                                       B3F-10XX            switch-omron         (38.1 22.225)         R180
+T1                 BC337                 TO92                transistor           (6.35 36.83)          R180
+X1                 GND D2 VCC            22-23-2031          con-molex            (29.21 46.99)         R0
+X2                 GND D9 VCC            22-23-2031          con-molex            (19.05 46.99)         R0
+X3                 GND A3 VCC            22-23-2031          con-molex            (8.89 46.99)          R0
+X4                 VCC A4 A5 GND         22-23-2041          con-molex            (46.99 15.24)         R270
+X5                 GND A1   A2 VCC       22-23-2041          con-molex            (40.64 46.99)         R0
+X6                    A7 A6              22-23-2021          con-molex            (28.575 2.54)         R180
