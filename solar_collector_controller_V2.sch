@@ -6905,15 +6905,15 @@ Mating wall wart : TOL-00298 (and others)</description>
 <part name="R4" library="resistor" deviceset="R-EU_" device="0207/10" value="         4k7"/>
 <part name="LCD1602" library="Connector_seedstudio" deviceset="HEADER-16P" device="-2.54"/>
 <part name="R5" library="resistor" deviceset="R-TRIMM" device="64W" value="10k"/>
-<part name="X1" library="con-molex" deviceset="22-23-2031" device="" value="GND D2 VCC"/>
-<part name="X2" library="con-molex" deviceset="22-23-2031" device="" value="GND D9 VCC"/>
-<part name="X3" library="con-molex" deviceset="22-23-2031" device="" value="GND A3 VCC"/>
+<part name="X1" library="con-molex" deviceset="22-23-2031" device="" value="VCC D2 GND"/>
+<part name="X2" library="con-molex" deviceset="22-23-2031" device="" value="VCC D9 GND"/>
+<part name="X3" library="con-molex" deviceset="22-23-2031" device="" value="VCC A3 GND"/>
 <part name="S1" library="switch-omron" deviceset="10-XX" device="" value="Right"/>
 <part name="S2" library="switch-omron" deviceset="10-XX" device="" value="Up"/>
 <part name="S3" library="switch-omron" deviceset="10-XX" device="" value="Down"/>
 <part name="S4" library="switch-omron" deviceset="10-XX" device="" value="Left"/>
 <part name="S5" library="switch-omron" deviceset="10-XX" device="" value="Select"/>
-<part name="X5" library="con-molex" deviceset="22-23-2041" device="" value="GND A1   A2 VCC"/>
+<part name="X5" library="con-molex" deviceset="22-23-2041" device="" value="VCC A2   A1 GND"/>
 <part name="T1" library="transistor" deviceset="BC337" device=""/>
 <part name="R6" library="resistor" deviceset="R-EU_" device="0207/10" value="3k3"/>
 <part name="R7" library="resistor" deviceset="R-EU_" device="0207/10" value="1k"/>
@@ -6924,9 +6924,9 @@ Mating wall wart : TOL-00298 (and others)</description>
 <part name="ETHERNET" library="SparkFun-Connectors" deviceset="M05X2" device="PTH" value="ENC25J60"/>
 <part name="J1" library="SparkFun-Connectors" deviceset="POWER_JACK" device="PTH_LOCK" value="POWER"/>
 <part name="IC1" library="burr-brown" deviceset="REG1117" device=""/>
-<part name="X4" library="con-molex" deviceset="22-23-2041" device="" value="VCC A4 A5 GND"/>
-<part name="X6" library="con-molex" deviceset="22-23-2021" device="" value="   A7 A6"/>
-<part name="JP3" library="SparkFun" deviceset="M02" device="PTH"/>
+<part name="X4" library="con-molex" deviceset="22-23-2041" device="" value="GND A5 A4 VCC"/>
+<part name="X6" library="con-molex" deviceset="22-23-2021" device="" value="   A6 A7"/>
+<part name="JP3" library="SparkFun" deviceset="M02" device="PTH" value="GND 3.3V"/>
 </parts>
 <sheets>
 <sheet>
@@ -7111,6 +7111,7 @@ Mating wall wart : TOL-00298 (and others)</description>
 <segment>
 <pinref part="JP3" gate="G$1" pin="2"/>
 <wire x1="109.22" y1="38.1" x2="104.14" y2="38.1" width="0.1524" layer="91"/>
+<label x="104.14" y="38.1" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="RESET" class="0">
@@ -7567,6 +7568,7 @@ Mating wall wart : TOL-00298 (and others)</description>
 <segment>
 <pinref part="JP3" gate="G$1" pin="1"/>
 <wire x1="109.22" y1="40.64" x2="104.14" y2="40.64" width="0.1524" layer="91"/>
+<label x="104.14" y="40.64" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="A7" class="0">
