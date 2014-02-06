@@ -2,24 +2,24 @@ EAGLE AutoRouter Statistics:
 
 Job           : C:/Darbas/GitHub/Kolektorius_v2/v.2/kolektorius_v2.brd
 
-Start at      : 16:56:58 (2014.02.05)
-End at        : 17:00:00 (2014.02.05)
-Elapsed time  : 00:03:02
+Start at      : 16:46:35 (2014.02.06)
+End at        : 18:05:17 (2014.02.06)
+Elapsed time  : 01:18:42
 
-Signals       :    77   RoutingGrid: 10 mil  Layers: 2
-Connections   :   124   predefined:  102 ( 24 Vias )
+Signals       :    81   RoutingGrid: 1 mil  Layers: 2
+Connections   :   165   predefined:  0 ( 0 Vias )
 
-Router memory :   1752588
+Router memory :   159725040
 
-Passname          :     Route Optimize1 Optimize2 Optimize3 Optimize4
+Passname          :    Busses     Route Optimize1 Optimize2 Optimize3 Optimize4
 
-Time per pass     :  00:02:31  00:00:07  00:00:06  00:00:07  00:00:11
-Number of Ripups  :         0         0         0         0         0
-max. Level        :         3         0         0         0         0
-max. Total        :         2         0         0         0         0
+Time per pass     :  00:00:12  00:06:59  00:18:22  00:18:29  00:16:53  00:17:47
+Number of Ripups  :         0         1         0         0         0         0
+max. Level        :         0         1         0         0         0         0
+max. Total        :         0         1         0         0         0         0
 
-Routed            :         2         2         2         2         2
-Vias              :         0         0         0         0         0
-Resolution        :    83.9 %    83.9 %    83.9 %    83.9 %    83.9 %
+Routed            :        37       164       164       164       164       164
+Vias              :         0       237       100        66        63        62
+Resolution        :    22.4 %    99.4 %    99.4 %    99.4 %    99.4 %    99.4 %
 
-Final             : 83.9% finished
+Final             : 99.4% finished
