@@ -13528,6 +13528,10 @@ grid 5.08 mm</description>
 <pad name="B" x="0" y="-1.27" drill="0.8128" rot="R90"/>
 <text x="-2.54" y="1.778" size="1.27" layer="25" ratio="10">&gt;NAME</text>
 <text x="-2.54" y="-4.572" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
+<wire x1="-2.413" y1="-2.413" x2="-2.54" y2="-2.0828" width="0.127" layer="21"/>
+<wire x1="-2.4384" y1="-0.1524" x2="-2.5654" y2="-0.5588" width="0.127" layer="21"/>
+<wire x1="2.4384" y1="-2.3876" x2="2.5654" y2="-1.9812" width="0.127" layer="21"/>
+<wire x1="2.413" y1="-0.127" x2="2.5654" y2="-0.5588" width="0.127" layer="21"/>
 </package>
 <package name="SMADIODE">
 <description>&lt;b&gt;SMA Surface Mount Diode&lt;/b&gt;</description>
@@ -18150,9 +18154,9 @@ Grid 2.54 mm&lt;p&gt;
 <circle x="-2.54" y="0" radius="0.889" width="0.1524" layer="51"/>
 <circle x="0" y="0" radius="0.889" width="0.1524" layer="51"/>
 <circle x="2.54" y="0" radius="0.889" width="0.1524" layer="51"/>
-<pad name="1" x="-2.54" y="0" drill="1.2" shape="long" rot="R90"/>
-<pad name="2" x="0" y="0" drill="1.2" shape="long" rot="R90"/>
-<pad name="3" x="2.54" y="0" drill="1.2" shape="long" rot="R90"/>
+<pad name="1" x="-2.54" y="0" drill="1.2" shape="octagon" rot="R90"/>
+<pad name="2" x="0" y="0" drill="1.2" shape="octagon" rot="R90"/>
+<pad name="3" x="2.54" y="0" drill="1.2" shape="octagon" rot="R90"/>
 <text x="-4.064" y="1.778" size="1.27" layer="25">&gt;NAME</text>
 <text x="-4.064" y="-3.048" size="1.27" layer="27">&gt;VALUE</text>
 </package>
@@ -18703,7 +18707,7 @@ Grid 2.54 mm&lt;p&gt;
 <busses>
 </busses>
 <nets>
-<net name="GND" class="1">
+<net name="GND" class="0">
 <segment>
 <wire x1="259.08" y1="213.36" x2="259.08" y2="210.82" width="0.1524" layer="91"/>
 <wire x1="281.94" y1="213.36" x2="259.08" y2="213.36" width="0.1524" layer="91"/>
@@ -18970,7 +18974,7 @@ Grid 2.54 mm&lt;p&gt;
 <pinref part="ISP" gate="A" pin="2"/>
 </segment>
 </net>
-<net name="VCC" class="1">
+<net name="VCC" class="0">
 <segment>
 <pinref part="+3V1" gate="VCC" pin="VCC"/>
 <wire x1="91.44" y1="147.32" x2="91.44" y2="153.67" width="0.1524" layer="91"/>
