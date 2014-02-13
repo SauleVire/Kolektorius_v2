@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.05" unitdist="inch" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="mm"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
@@ -18348,7 +18348,6 @@ Grid 2.54 mm&lt;p&gt;
 <part name="RESET" library="SparkFun-Electromechanical" deviceset="TAC_SWITCH" device="PTH"/>
 <part name="GND9" library="SparkFun" deviceset="GND" device=""/>
 <part name="R16" library="rcl" deviceset="R-EU_" device="R0805" value="10k"/>
-<part name="CX5" library="resistor" deviceset="C-EU" device="C0805" value="100n"/>
 <part name="+3V7" library="supply1" deviceset="VCC" device=""/>
 <part name="CX6" library="resistor" deviceset="C-EU" device="C0805" value="100n"/>
 <part name="GND11" library="SparkFun" deviceset="GND" device=""/>
@@ -18577,10 +18576,6 @@ Grid 2.54 mm&lt;p&gt;
 <instance part="R16" gate="G$1" x="146.05" y="125.73" smashed="yes" rot="R90">
 <attribute name="NAME" x="144.526" y="126.0094" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="143.256" y="128.27" size="1.778" layer="96" rot="R180"/>
-</instance>
-<instance part="CX5" gate="G$1" x="151.13" y="127" smashed="yes">
-<attribute name="NAME" x="154.559" y="119.634" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="157.099" y="119.634" size="1.778" layer="96" rot="R90"/>
 </instance>
 <instance part="+3V7" gate="VCC" x="146.05" y="140.97"/>
 <instance part="CX6" gate="G$1" x="137.16" y="95.25" smashed="yes">
@@ -19561,17 +19556,13 @@ Grid 2.54 mm&lt;p&gt;
 <net name="N$46" class="0">
 <segment>
 <pinref part="U1" gate="G$1" pin="PC6(/RESET)"/>
-<wire x1="162.56" y1="113.03" x2="160.02" y2="113.03" width="0.1524" layer="91"/>
 <pinref part="RESET" gate="S" pin="4"/>
 <wire x1="142.24" y1="113.03" x2="146.05" y2="113.03" width="0.1524" layer="91"/>
 <pinref part="RESET" gate="S" pin="3"/>
-<wire x1="146.05" y1="113.03" x2="151.13" y2="113.03" width="0.1524" layer="91"/>
-<wire x1="151.13" y1="113.03" x2="160.02" y2="113.03" width="0.1524" layer="91"/>
+<wire x1="146.05" y1="113.03" x2="162.56" y2="113.03" width="0.1524" layer="91"/>
 <wire x1="142.24" y1="115.57" x2="142.24" y2="113.03" width="0.1524" layer="91"/>
 <pinref part="R16" gate="G$1" pin="1"/>
 <wire x1="146.05" y1="120.65" x2="146.05" y2="113.03" width="0.1524" layer="91"/>
-<pinref part="CX5" gate="G$1" pin="2"/>
-<wire x1="151.13" y1="121.92" x2="151.13" y2="113.03" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="D11" class="0">
@@ -19735,13 +19726,6 @@ Grid 2.54 mm&lt;p&gt;
 <wire x1="66.04" y1="21.59" x2="71.12" y2="21.59" width="0.1524" layer="91"/>
 <pinref part="SELECT" gate="S" pin="3"/>
 <wire x1="66.04" y1="21.59" x2="66.04" y2="24.13" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="DTR" class="0">
-<segment>
-<pinref part="CX5" gate="G$1" pin="1"/>
-<wire x1="151.13" y1="129.54" x2="151.13" y2="138.43" width="0.1524" layer="91"/>
-<label x="151.13" y="134.62" size="1.778" layer="95" rot="R90"/>
 </segment>
 </net>
 <net name="N$12" class="0">

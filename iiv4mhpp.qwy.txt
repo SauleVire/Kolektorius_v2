@@ -1,0 +1,40 @@
+﻿Revert "pcb"
+
+This reverts commit fb0e26d1909476b44332529ce937f1213e0a7833.
+
+Conflicts:
+	v.2/kolektorius_v2.b#1
+	v.2/kolektorius_v2.b#3
+	v.2/kolektorius_v2.b#4
+	v.2/kolektorius_v2.b#5
+	v.2/kolektorius_v2.b#6
+	v.2/kolektorius_v2.b#7
+	v.2/kolektorius_v2.b#8
+	v.2/kolektorius_v2.b#9
+	v.2/kolektorius_v2.brd
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Your branch is behind 'origin/master' by 2 commits, and can be fast-forwarded.
+#   (use "git pull" to update your local branch)
+#
+# You are currently reverting commit fb0e26d.
+#   (all conflicts fixed: run "git revert --continue")
+#   (use "git revert --abort" to cancel the revert operation)
+#
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#	deleted:    v.2/kolektorius_v2.b##
+#	modified:   v.2/kolektorius_v2.b#3
+#	modified:   v.2/kolektorius_v2.b#4
+#	modified:   v.2/kolektorius_v2.b#5
+#	modified:   v.2/kolektorius_v2.b#6
+#	modified:   v.2/kolektorius_v2.b#7
+#	renamed:    v.2/kolektorius_v2.b#1 -> v.2/kolektorius_v2.brd
+#	new file:   v.2/kolektorius_v2.brd10
+#	renamed:    v.2/kolektorius_v2.b#8 -> v.2/kolektorius_v2.brd8
+#	renamed:    v.2/kolektorius_v2.b#9 -> v.2/kolektorius_v2.brd9
+#
+
