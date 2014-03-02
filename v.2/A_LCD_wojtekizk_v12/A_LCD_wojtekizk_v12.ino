@@ -34,12 +34,8 @@ boolean InMenu = false;
 // --- tworzymy wszystkie opcje Menu: ---------------------------------------
 // de facto tworzymy obiekty klasy MenuItem, które dziedziczą po klasie MenuBackend
 MenuBackend menu = MenuBackend(menuUseEvent,menuChangeEvent); // konstruktor 
-   //                        ("                ")
    MenuItem P1 =  MenuItem("Ij.temperatura",1);
-
-      
    MenuItem P2 = MenuItem("Is.temperatura",1);
-   
    MenuItem P3 = MenuItem("  Nuorinimas",1);
    MenuItem P4 = MenuItem(" Termostatas",1);
 
@@ -170,8 +166,8 @@ void menuUseEvent(MenuUseEvent used)      // funkcja klasy MenuBackend - reakcja
 void menuChangeEvent(MenuChangeEvent changed)  // funkcja klasy MenuBackend 
 {
   if(changed.to.getName()==menu.getRoot()){InMenu =false;
-//                                           Serial.println("Dabar esame MenuRoot");
-//                                           lcd.setCursor(0,1);lcd.print("    MenuRoot");
+                                           Serial.println("Dabar esame MenuRoot");
+                                           lcd.clear();lcd.setCursor(0,1);lcd.print("    MenuRoot");
                                            }
   /* tak naprawdę to tylko tutaj przydaje się ów shortkey i służy przede wszystkim do wzbogacenia menu
      o symbole strzałek w zależności co wybrano. Wszystko co tutaj się wyprawia jest pokazywane na LCD. 
@@ -180,7 +176,7 @@ void menuChangeEvent(MenuChangeEvent changed)  // funkcja klasy MenuBackend
   lcd.clear();                                            // bez komentarza 
   lcd.setCursor(0,0); 
   if(c==1)                                                // jeśli to menu głowne (shortkey=1) to:
-    {
+    {InMenu =true;
     lcd.write(3);                                         // strzałka w lewo
     strcpy(linia1,changed.to.getName());                  // tworzymy napis w pierwszej linii
     lcd.print(linia1);                                    // wyświetlamy ją
@@ -189,7 +185,7 @@ void menuChangeEvent(MenuChangeEvent changed)  // funkcja klasy MenuBackend
     lcd.setCursor(15,1);lcd.write(5);                     // strzałka w dół
     }
     if(c==2)                                              // jeśli to podmenu dla dziecka - (shortkey=2) to:
-    {
+    {InMenu =true;
     lcd.print("*");                                       // rysujemy gwiazdkę
     strcpy(linia2,changed.to.getName());                  // tworzymy napis w pierwszej linii
     lcd.print(linia1);                                    // wyświetlamy ją
@@ -199,7 +195,7 @@ void menuChangeEvent(MenuChangeEvent changed)  // funkcja klasy MenuBackend
     lcd.setCursor(15,1);lcd.write(7);                     // strzałka góra-dół
     }
     if(c==3)                                              // jeśli dziecko  ma dziecko - (shortkey =3) to:
-    {
+    {InMenu =true;
     lcd.print("*");                                       // gwiazdka
     strcpy(linia2,changed.to.getName());                  // kopiujemy akt. nazwe opcji menu do zmiennej linia2
     lcd.print(linia1);                                    // i wyświetlamy pierwszą linię
@@ -210,7 +206,7 @@ void menuChangeEvent(MenuChangeEvent changed)  // funkcja klasy MenuBackend
     }
     
     if(c==4)                                              // jeśli to wnuk  (shortkey =4) to:
-    {
+    {InMenu =true;
     lcd.print("*");                                       // gwaizdka
     lcd.print(linia2);                                    // w pierwszej linii wyświetlamy dziecko ( czyli rodzica wnuka) 
     lcd.setCursor(15,0);lcd.print("*");                   // gwaizdka
@@ -307,7 +303,7 @@ void loop()
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 if (InMenu == false){
   Serial.println("Dabar esame MenuRoot");
-                                           lcd.setCursor(0,1);lcd.print("    MenuRoot");
+lcd.setCursor(0,1);lcd.print("    MenuRoot");
 }
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
