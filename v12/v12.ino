@@ -10,9 +10,7 @@
    #include <DallasTemperature.h>
 
     #include <EEPROM.h>
-//     #include <PID_v1.h>
 #include "definitions.h"
-#include "config.h"    
 
 //Define Variables we'll be connecting to
 double Setpoint, Input, Output;
@@ -88,11 +86,11 @@ void menuUseEvent(MenuUseEvent used)      // funkcja klasy MenuBackend - reakcja
    // przykładowa reakcja na wcisnięcie klawisza OK w opcji Otworz :
 /* __________________________ NUSTATYMAI Ijungimo skirtumo temperatura          _______________________ */
 if (used.item.getName() == "Ijungimo sk. t")   // dokladnie taki sam ciag " Temperatura"
-k_ijungimo_skirtumas =  MeniuFunkcija ("Nustatyta=", k_ijungimo_skirtumas, 25, 1, ">Temperatura OK"); 
+k_ijungimo_skirtumas =  MeniuFunkcija ("Nustatyta=    ", k_ijungimo_skirtumas, 25, 1, ">Temperatura OK"); 
      ///////////////////////////////////////////////////////////////////
 /* __________________________ NUSTATYMAI Isjungimo skirtumo temperatura          _______________________ */     
 if (used.item.getName() == "Isjungimo sk.t")   // dokladnie taki sam ciag " Temperatura"
-k_isjungimo_skirtumas =  MeniuFunkcija ("Nustatyta=", k_isjungimo_skirtumas, 25, 1, ">Temperatura OK"); 
+k_isjungimo_skirtumas =  MeniuFunkcija ("Nustatyta=    ", k_isjungimo_skirtumas, 25, 1, ">Temperatura OK"); 
      ///////////////////////////////////////////////////////////////////     
 /* __________________________ NUSTATYMAI Irasymas____________________________________ */
      if (used.item.getName() == "Irasyti nustat")   // dokładnie taki sam ciąg " Temperatura"
@@ -106,13 +104,14 @@ k_isjungimo_skirtumas =  MeniuFunkcija ("Nustatyta=", k_isjungimo_skirtumas, 25,
       }
 /* __________________________ Termostatas temperatura 1   _______________________ */
 if (used.item.getName() == "temperatura 1 ")   // dokladnie taki sam ciag " Temperatura"
-temperatura_1 =  MeniuFunkcija ("Nustatyta=", temperatura_1, 99, -25, ">Temperatura OK"); 
+temperatura_1 =  MeniuFunkcija ("Nustatyta=    ", temperatura_1, 99, -25, ">Temperatura OK"); 
      ///////////////////////////////////////////////////////////////////
 /* __________________________ Termostatas temperatura 2  _______________________ */     
 if (used.item.getName() == "temperatura 2 ")   // dokladnie taki sam ciag " Temperatura"
-temperatura_2 =  MeniuFunkcija ("Nustatyta=", temperatura_2, 99, -25, ">Temperatura OK"); 
+temperatura_2 =  MeniuFunkcija ("Nustatyta=    ", temperatura_2, 99, -25, ">Temperatura OK"); 
      ///////////////////////////////////////////////////////////////////     
 /* __________________________ Termostatas busena  _______________________ */     
+
 if (used.item.getName() == "busena        ") 
  {
         lcd.setCursor(0,0);lcd.write(7);     
@@ -242,12 +241,12 @@ void setup()
     lcd.setCursor(0,0); 
     lcd.print("www.SauleVire.lt");
     lcd.setCursor(0,1); 
-    lcd.print("valdiklis v1.2"); delay(2999);
+    lcd.print("      v1.2"); delay(2999);
  lcd.clear();
    K_sensor.begin();B_sensor.begin();
    T_sensor.begin();
    
-  pinMode(13,OUTPUT);digitalWrite(13,LOW); // tik testas 
+  pinMode(13,OUTPUT);digitalWrite(13,HIGH); // tik testas 
   pinMode(Rele_K,OUTPUT);pinMode(Rele_T,OUTPUT);
   digitalWrite(Rele_K,HIGH);digitalWrite(Rele_T,HIGH);
   menuSetup(); 
@@ -327,12 +326,99 @@ if (millis() > temperaturu_matavimo_laikas_1 ) {
 if (millis() > Reliu_junginejimo_laikas ) 
  {
    Reliu_junginejimo_laikas=millis()+Reliu_junginejimo_pertrauka;
-   if (K-B>=k_ijungimo_skirtumas) digitalWrite(Rele_K,LOW);
-   if (K-B<=k_isjungimo_skirtumas) digitalWrite(Rele_K,HIGH);
-   //Jei šildymo režimas
-   if T_busena == 1 
+   if (K-B >= k_ijungimo_skirtumas) digitalWrite(Rele_K,LOW);
+   if (K-B <= k_isjungimo_skirtumas) digitalWrite(Rele_K,HIGH);
+   //Jei šildymo režimas- T_busena=1
+   if (T_busena == 1) 
    {
-    if (T >= temperatura_1) digitalWrite(Rele_T,LOW);
+    if (T >= temperatura_1) digitalWrite(Rele_T,HIGH);
  }
-
+   //Jei šaldymo režimas- T_busena=2
+ }
 }// === PABAIGA ===========================================================
+void LCD_T_sablonas(){
+  lcd.setCursor(0,0);  lcd.print("K"); lcd.setCursor(6,0);  lcd.print(" S");
+  lcd.setCursor(0,1);  lcd.print("B"); lcd.setCursor(6,1);  lcd.print(" T"); 
+}
+
+void Temperaturu_vaizdavimas(){
+lcd.setCursor(1,0); lcd.print(K); lcd.setCursor(8,0); lcd.print(K-B);//(int(K + 0.5));  
+lcd.setCursor(1,1); lcd.print(B); lcd.setCursor(8,1); lcd.print(T);//(int(K + 0.5));
+}
+boolean LoadConfig(){
+  if ((EEPROM.read(0) == 27) && (EEPROM.read(1) == 28) && 
+     (EEPROM.read(2) == 13) && (EEPROM.read(3) == 18)) {
+
+    if (EEPROM.read(4) == EEPROM.read(5)) k_ijungimo_skirtumas = EEPROM.read(4);  
+    if (EEPROM.read(6) == EEPROM.read(7)) k_isjungimo_skirtumas = EEPROM.read(6);
+    return true;
+  }
+  return false;
+}
+
+void SaveConfig(){
+  EEPROM.write(0,27);
+  EEPROM.write(1,28);
+  EEPROM.write(2,13);
+  EEPROM.write(3,18);
+  EEPROM.write(4,k_ijungimo_skirtumas);EEPROM.write(5,k_ijungimo_skirtumas);  // almacenamos los valores 2 veces
+  EEPROM.write(6,k_isjungimo_skirtumas); EEPROM.write(7,k_isjungimo_skirtumas);  // almacenamos los valores 2 veces
+
+}
+void Temperaturu_matavimas_1(){
+  //____________________________ Start Sensor 1 _________________________________
+#ifdef SetWaitForConversionFALSE
+  K_sensor.setWaitForConversion(false);  // makes it async
+#endif
+  K_sensor.requestTemperatures(); // Send the command to get temperatures
+  K=K_sensor.getTempCByIndex(0);
+//_____________________________ Stop Sensor 1 ___________________________________
+  //______________________ Start Sensor 3 ________________________________________
+  #ifdef SetWaitForConversionFALSE
+  T_sensor.setWaitForConversion(false);  // makes it async
+#endif
+  T_sensor.requestTemperatures(); // Send the command to get temperatures
+T=T_sensor.getTempCByIndex(0);
+//___________________ Stop Sensor 3 ______________________________________________
+//__________________________________________ Start Sensor 2 _____________________
+#ifdef SetWaitForConversionFALSE
+  B_sensor.setWaitForConversion(false);  // makes it async
+#endif
+  B_sensor.requestTemperatures(); // Send the command to get temperatures
+  B=B_sensor.getTempCByIndex(0);
+//_____________________________________ Stop Sensor 2 ____________________________
+}
+
+	   int MeniuFunkcija (String tekstas1, int KeiciamaReiksme, int MaxReiksme, int MinReiksme, String tekstas2)
+	        {
+        lcd.setCursor(0,0);lcd.write(7);     
+        lcd.setCursor(1,1);lcd.print(tekstas1); //("Nustatyta=   "); 
+        lcd.setCursor(11,1);lcd.print(KeiciamaReiksme); // rodoma esama reikšmė
+        int  veiksmas=-1; delay(1000);         // 
+                                           
+        while(veiksmas!=4)                   // 
+         {
+           klaviaturos_pasikeitimas=-1; 
+           veiksmas=Klaviaturos_skaitymas(Key_Pin); //delay(300);  
+                                            
+           if(klaviaturos_pasikeitimas!=veiksmas)           
+             {
+             if (veiksmas==1) {KeiciamaReiksme++; if(KeiciamaReiksme>MaxReiksme) KeiciamaReiksme=MaxReiksme; lcd.setCursor(11,1);
+                                                    if(KeiciamaReiksme<10) lcd.print(" ");
+                                                      lcd.print(KeiciamaReiksme); delay(200);}
+             if(veiksmas==2)  {KeiciamaReiksme--; if(KeiciamaReiksme<MinReiksme) KeiciamaReiksme=MinReiksme; lcd.setCursor(11,1);
+                                                     if(KeiciamaReiksme<10) lcd.print(" ");
+                                                       lcd.print(KeiciamaReiksme); delay(200);}
+             if(veiksmas==4) // 0
+               {
+                 lcd.setCursor(0,1); lcd.print(tekstas2); delay(2000); // 0
+                 lcd.setCursor(0,1); lcd.print("                "); // 0
+                 //lcd.setCursor(1,0);lcd.print(eilute1);           // 0
+               }
+             } 
+         } klaviaturos_pasikeitimas=veiksmas;  // aktualizacja klaviaturos_pasikeitimasiennej klaviaturos_pasikeitimas, po to aby reagowac tylko na klaviaturos_pasikeitimasiany stanu klawiatury
+         // tu WAZNY MOMENT - konczy sie petla while i zwracamy sterowanie do gl�wnej petli loop()
+         return KeiciamaReiksme;
+      }
+
+
