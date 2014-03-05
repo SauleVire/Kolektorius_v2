@@ -12,16 +12,30 @@
 unsigned long Meniu_praleistas_neaktyvus_laikas;
 #define neaktyvus_meniu 20000
 unsigned long temperaturu_matavimo_laikas_1 = 0;
-unsigned long Reliu_junginejimo_laikas = 0;
+unsigned long temperaturu_matavimo_laikas_2 = 0;
 unsigned long temperaturu_matavimo_laikas_3 = 0;
 #define temperaturu_matavimo_pertrauka_1 5000
-#define Reliu_junginejimo_pertrauka 30000
-#
+#define temperaturu_matavimo_pertrauka_2 30000
+#define temperaturu_matavimo_pertrauka_3 60000
 
 unsigned long Ekrano_pasvietimo_ijungimo_laikas;
 unsigned long  Ekrano_pasvietimo_pertrauka = 600000;
 unsigned long Ekrano_rodmenu_atnaujinimo_laikas = 0;
 #define Ekrano_rodmenu_atnaujinimo_pertrauka 5000
+unsigned long AT_rankinio_ijungimo_laikas =0;
+unsigned long AT_rankinio_ijungimo_trukme = 300000;
+unsigned long B_rankinio_ijungimo_laikas =0;
+unsigned long B_rankinio_ijungimo_trukme = 300000;
+unsigned long SK_rankinio_ijungimo_laikas =0;
+unsigned long SK_rankinio_ijungimo_trukme = 300000;
+unsigned long PV_pauze =20000;
+unsigned long PV_pauzes_pertrauka =20000;
+unsigned long PV_atidarinejimo_laikas =0;
+unsigned long PV_uzdarinejimo_laikas =0;
+unsigned long PV_atidarinejimo_pertrauka =6000;
+unsigned long PV_uzdarinejimo_pertrauka =6000;
+byte PV_darinejimas = 60;
+#define MV_judejimas 5500
 
 
 /* ************** LKLAVIATUROS KINTAMIEJI ************************************* */
@@ -39,8 +53,7 @@ byte arrow_up[8]={ B00100,B01110,B11111,B00100,B00100,B00100,B00100,B00100};
 byte arrow_down[8]={ B00100,B00100,B00100,B00100,B00100,B11111,B01110,B00100};
 
 /* ******************** reles *********************************** */
-#define Rele_K A1 // Kolektorius
-#define Rele_T A2 // Termostatas
+
 /* ************************** davikliai *********************** */
 #define ONE_WIRE_BUS1 2 // Kolektorius
 #define ONE_WIRE_BUS2 9 // Boileris
@@ -61,18 +74,24 @@ float K,B,T;
 /* ********** kintamieji Kieto kuro katilui ******************* */
 /* ********** kintamieji Dujiniam katilui ******************* */
 /* ********** kintamieji saulės kolektoriui ******************* */
-byte k_ijungimo_skirtumas = 5;
-byte k_isjungimo_skirtumas = 3;
+byte k_skirtumas_ON = 5;
+byte k_skirtumas_OFF = 3;
 boolean k_uzsalimas = false;
-boolean SK_nuorinimas = false; // Žymė rankiniam SK siurblio valdymui (nuorinimas)
-/* ********** kintamieji Termostatui ******************* */
-byte temperatura_1 = 20;
-byte temperatura_2 = 25;
-byte T_busena =1;
+boolean SK_rankinis_ijungimas = false; // Žymė rankiniam SK siurblio valdymui (nuorinimas)
 /* *************************************************************** */
 /* ********** kintamieji Akumuliacinei talpai ******************* */
+byte at_ON_T = 90; // temperatūra akumuliacines talpos siurbliui įjungti
+byte at_OFF_T = 89; // temperatūra akumuliacines talpos siurbliui įšjungti
+byte AT_rankinis_ijungimas = 0; // Žymė rankiniam AT siurblio valdymui
 /* ********************************************************************** */
+
+/* ********************************************************************** */
+
 /* ************************************************************************ */
 /* ********** kintamieji siurbliams ******************* */
+boolean SK_siurblys = false;
+boolean PV_siurblys = false;
+boolean AT_siurblys = false;
+boolean B_siurblys = false;
 /* ---------------- kintamieji motorizuotiems vožtuvams -------------------- */
 
