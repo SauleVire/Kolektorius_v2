@@ -115,7 +115,10 @@ temperatura_2 =  MeniuFunkcija ("Nustatyta=", temperatura_2, 99, -25, ">Temperat
 if (used.item.getName() == "busena        ") 
  {
         lcd.setCursor(0,0);lcd.write(7);     
-        lcd.setCursor(1,1);lcd.print("Busena-");if (T_busena == 1) lcd.print("saldymas"); else lcd.print("sildymas"); //("Nustatyta=   "); 
+        lcd.setCursor(1,1);lcd.print("Busena-");
+                     if (T_busena == 1) lcd.print("saldymas");
+                     if (T_busena == 2) lcd.print("sildymas");
+                     if (T_busena == 3) lcd.print("isjungta");//("Nustatyta=   "); 
         //lcd.setCursor(10,0);lcd.print(KeiciamaReiksme); // rodoma esama reik�m�
         int  veiksmas=-1; delay(1000);         // 
                                            
@@ -126,7 +129,7 @@ if (used.item.getName() == "busena        ")
                                             
            if(klaviaturos_pasikeitimas!=veiksmas)           
              {
-             if (veiksmas==1) {T_busena++; if(T_busena>2) T_busena=2; lcd.setCursor(10,0);
+             if (veiksmas==1) {T_busena++; if(T_busena>3) T_busena=3; lcd.setCursor(10,0);
                                                  lcd.setCursor(8,1); lcd.print("saldymas"); delay(200);}
              if(veiksmas==2)  {T_busena--; if(T_busena<1) T_busena=1; lcd.setCursor(10,0);
                                                  lcd.setCursor(8,1); lcd.print("sildymas"); delay(200);}
@@ -328,11 +331,20 @@ if (millis() > Reliu_junginejimo_laikas )
    Reliu_junginejimo_laikas=millis()+Reliu_junginejimo_pertrauka;
    if (K-B>=k_ijungimo_skirtumas) digitalWrite(Rele_K,LOW);
    if (K-B<=k_isjungimo_skirtumas) digitalWrite(Rele_K,HIGH);
-   //Jei šildymo režimas
-   if (T_busena == 1) 
-   {
-    if (T >= temperatura_1) digitalWrite(Rele_T,LOW);
- 
- }
+   
+  if (T_busena == 1) 
+   {//Jei šildymo režimas (T_busena = 1)
+    if (T <= temperatura_1) digitalWrite(Rele_T,LOW);
+    if (T >= temperatura_2) digitalWrite(Rele_T,HIGH);
+   }
+   if (T_busena == 2) 
+    {//Jei šaldymo režimas (T_busena = 2)
+     if (T >= temperatura_1) digitalWrite(Rele_T,LOW);
+     if (T <= temperatura_2) digitalWrite(Rele_T,HIGH);
+    }
+    if (T_busena == 3) 
+     {//Jei antra rele nereikalinga
+      digitalWrite(Rele_T,HIGH);
+     }
  }
 }// === PABAIGA ===========================================================
