@@ -1,8 +1,11 @@
 /* @@@@@@@@@@@@@@@@@@@@@@ testavimui @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
-// #define DEBUG 
+ #define DEBUG 
  #define SetWaitForConversionFALSE // pagreitintas ds18b20 temperatūrų matavimas
-
-#define DEBUGds18b20 // temperatūrų matavimo testavimui 
+ #define DEBUGakumuliacine //akumuliacines testavimui
+// #define DEBUGboileris // boilerio testavimui
+// #define DEBUGkolektorius // saulės kolektoriaus testavimui
+ #define DEBUGpv // pamaišymo vožtuvo testavimui
+ #define DEBUGds18b20 // temperatūrų matavimo testavimui 
 // #define DEBUGbusena
 
 /* ********************** Laikai *************************************** */
@@ -12,7 +15,7 @@ unsigned long temperaturu_matavimo_laikas_1 = 0;
 unsigned long Reliu_junginejimo_laikas = 0;
 unsigned long temperaturu_matavimo_laikas_3 = 0;
 #define temperaturu_matavimo_pertrauka_1 5000
-#define Reliu_junginejimo_pertrauka 5000
+#define Reliu_junginejimo_pertrauka 30000
 #
 
 unsigned long Ekrano_pasvietimo_ijungimo_laikas;
@@ -72,5 +75,4 @@ byte T_busena =1;
 /* ************************************************************************ */
 /* ********** kintamieji siurbliams ******************* */
 /* ---------------- kintamieji motorizuotiems vožtuvams -------------------- */
-
 

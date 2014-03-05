@@ -1,33 +1,44 @@
 // ============= KKK valdinlis v2.1 ===============================================
 
+
 #include <Wire.h>
- #include <MenuBackend.h>        
-  #include <LiquidCrystal.h>         
- #include <OneWire.h>
-#include <DallasTemperature.h>
- #include <EEPROM.h>
+//#include <DS1307.h>
+
+#include <MenuBackend.h>        
+ #include <LiquidCrystal.h>         
+  #include <OneWire.h>
+   #include <DallasTemperature.h>
+
+    #include <EEPROM.h>
 #include "definitions.h"
 
+//Define Variables we'll be connecting to
+double Setpoint, Input, Output;
+//Specify the links and initial tuning parameters
+//PID PV_PID(&Input, &Output, &Setpoint,6,15,3, DIRECT);
+//int WindowSize = 10000;
+//unsigned long windowStartTime;
 
-  // --- definiujemy dla LCD w�asne znaki strza�ek: d��, lewo, prawo, gora-d�� i powr�t ---
+  // --- definiujemy dla LCD własne znaki strzałek: dół, lewo, prawo, gora-dół i powrót ---
 uint8_t arrowUpDown[8] = {0x4,0xe,0x15,0x4,0x15,0xe,0x4};
 uint8_t arrowDown[8]  = {0x4,0x4,0x4,04,0x15,0xe,0x4};
 uint8_t arrowRight[8] = {0x0,0x4,0x2,0x1f,0x2,0x4,0x0};
 uint8_t arrowLeft[8] = {0x0,0x4,0x8,0x1f,0x8,0x4,0x0};
 uint8_t arrowBack[8] = {0x1,0x1,0x5,0x9,0x1f,0x8,0x4};
 uint8_t arrowUp[8]={ B00100,B01110,B11111,B00100,B00100,B00100,B00100,B00100};
-    // definicja pin�w dla LCD (sprawd� piny w swoim LCD)
+    // definicja pinów dla LCD (sprawdź piny w swoim LCD)
 LiquidCrystal lcd(A5, 3, 4, 5, 6, 7);
 /* ------------------ R T C ---------------------- */
 
 
 /* --------------------- RTC PABAIGA ---------------- */
-char *eilute1;                      // pierwsza eilute wy�wietlanego tekstu na LCD
-char *eilute2;                      // druga eilute wy�wietlanego tekstu na LCD
+char *eilute1;                      // pierwsza eilute wyświetlanego tekstu na LCD
+char *eilute2;                      // druga eilute wyświetlanego tekstu na LCD
+char *eilute3;
     boolean InMenu = false;
 
 // --- tworzymy wszystkie opcje Menu: ---------------------------------------
-// de facto tworzymy obiekty klasy MenuItem, kt�re dziedzicz� po klasie MenuBackend
+// de facto tworzymy obiekty klasy MenuItem, które dziedziczą po klasie MenuBackend
 MenuBackend menu = MenuBackend(menuUseEvent,menuChangeEvent); // konstruktor 
    //                        ("                ")
    MenuItem P1 =  MenuItem("KOLEKTORIUS   ",1);
@@ -42,7 +53,7 @@ MenuBackend menu = MenuBackend(menuUseEvent,menuChangeEvent); // konstruktor
       MenuItem P23 = MenuItem("busena        ",2);
 
 
-/* --- Teraz pozycjonujemy  menu ( zgodnie z ustawieniem podanym powy�ej) ------------
+/* --- Teraz pozycjonujemy  menu ( zgodnie z ustawieniem podanym powyżej) ------------
 add - dodaje w pionie, addRight - dodaje w poziomie z prawej , addLeft dodaje z lewej
 */
 void menuSetup()                       // funkcja klasy MenuBackend 
@@ -67,29 +78,28 @@ void menuSetup()                       // funkcja klasy MenuBackend
       
 }
 // ----------- uff... nareszcie :-) -----------------------------------------------------------------------
-void menuUseEvent(MenuUseEvent used)      // funkcja klasy MenuBackend - reakcja na wci�ni�cie OK
-                                          // tutaj w�a�nie oddajemy menu na rzecz akcji obs�ugi klawisza OK
+void menuUseEvent(MenuUseEvent used)      // funkcja klasy MenuBackend - reakcja na wciśnięcie OK
+                                          // tutaj właśnie oddajemy menu na rzecz akcji obsługi klawisza OK
 {
-   Serial.print("pasirinkta:  "); Serial.println(used.item.getName()); // do test�w, potem niepotrzebne
-   // --- ponizej kilka przyk�ad�w obs�ugi  opcji -----------
-   // przyk�adowa reakcja na wcisni�cie klawisza OK w opcji Otworz :
+   Serial.print("pasirinkta:  "); Serial.println(used.item.getName()); // do testów, potem niepotrzebne
+   // --- ponizej kilka przykładów obsługi  opcji -----------
+   // przykładowa reakcja na wcisnięcie klawisza OK w opcji Otworz :
 /* __________________________ NUSTATYMAI Ijungimo skirtumo temperatura          _______________________ */
 if (used.item.getName() == "Ijungimo sk. t")   // dokladnie taki sam ciag " Temperatura"
-k_ijungimo_skirtumas =  MeniuFunkcija ("Nustatyta=    ", k_ijungimo_skirtumas, 25, 1, ">Temperatura OK");
+k_ijungimo_skirtumas =  MeniuFunkcija ("Nustatyta=    ", k_ijungimo_skirtumas, 25, 1, ">Temperatura OK"); 
      ///////////////////////////////////////////////////////////////////
 /* __________________________ NUSTATYMAI Isjungimo skirtumo temperatura          _______________________ */     
 if (used.item.getName() == "Isjungimo sk.t")   // dokladnie taki sam ciag " Temperatura"
 k_isjungimo_skirtumas =  MeniuFunkcija ("Nustatyta=    ", k_isjungimo_skirtumas, 25, 1, ">Temperatura OK"); 
      ///////////////////////////////////////////////////////////////////     
 /* __________________________ NUSTATYMAI Irasymas____________________________________ */
-     if (used.item.getName() == "Irasyti nustat")   // dok�adnie taki sam ci�g " Temperatura"
+     if (used.item.getName() == "Irasyti nustat")   // dokładnie taki sam ciąg " Temperatura"
       {
                  SaveConfig();
                  lcd.setCursor(0,0);lcd.print(">Irasyta OK        ");delay(2000); // pokazujemy OK przez 2 sek.
-                 lcd.setCursor(0,0);lcd.print("                    "); // czy�cimy lini�
-                 lcd.setCursor(0,0);lcd.print("*");lcd.print(eilute1);           // odtwarzamy poprzedni stan na LCD
-                 lcd.setCursor(15,0);lcd.print("*");
-                menu.moveDown();
+                 lcd.setCursor(0,0);lcd.print("                    "); // czyścimy linię
+                // lcd.setCursor(0,0);lcd.print("*");lcd.print(eilute1);           // odtwarzamy poprzedni stan na LCD
+                // lcd.setCursor(19,0);lcd.print("*");
 
       }
 /* __________________________ Termostatas temperatura 1   _______________________ */
@@ -101,14 +111,12 @@ if (used.item.getName() == "temperatura 2 ")   // dokladnie taki sam ciag " Temp
 temperatura_2 =  MeniuFunkcija ("Nustatyta=    ", temperatura_2, 99, -25, ">Temperatura OK"); 
      ///////////////////////////////////////////////////////////////////     
 /* __________________________ Termostatas busena  _______________________ */     
+
 if (used.item.getName() == "busena        ") 
- {       
+ {
         lcd.setCursor(0,0);lcd.write(7);     
-        lcd.setCursor(1,1);lcd.print("Busena-"); 
-        if (T_busena == 1) lcd.print("sildymas");
-        if (T_busena == 2) lcd.print("saldymas");
-        if (T_busena == 3) lcd.print("isjungta");
-//      lcd.print(Busena(T_busena,termostato_busenos_pavadinimas));
+        lcd.setCursor(1,1);lcd.print("Busena-");if (T_busena == 1) lcd.print("saldymas"); else lcd.print("sildymas"); //("Nustatyta=   "); 
+        //lcd.setCursor(10,0);lcd.print(KeiciamaReiksme); // rodoma esama reikšmė
         int  veiksmas=-1; delay(1000);         // 
                                            
         while(veiksmas!=4)                   // 
@@ -118,33 +126,22 @@ if (used.item.getName() == "busena        ")
                                             
            if(klaviaturos_pasikeitimas!=veiksmas)           
              {
-             if (veiksmas==1) {T_busena++; if(T_busena>3) T_busena=1; 
-                                                 lcd.setCursor(8,1); 
-                                               //  lcd.print(Busena(T_busena,termostato_busenos_pavadinimas));
-                                                 if (T_busena == 1) lcd.print("sildymas");
-                                                 if (T_busena == 2) lcd.print("saldymas");
-                                                 if (T_busena == 3) lcd.print("isjungta"); 
-                                            delay(200);}
-             if(veiksmas==2)  {T_busena--; if(T_busena<1) T_busena=3; 
-                                                 lcd.setCursor(8,1); 
-                                              //   lcd.print(Busena(T_busena,termostato_busenos_pavadinimas));
-                                                 if (T_busena == 1) lcd.print("sildymas");
-                                                 if (T_busena == 2) lcd.print("saldymas");
-                                                 if (T_busena == 3) lcd.print("isjungta"); 
-                                               delay(200);}
+             if (veiksmas==1) {T_busena++; if(T_busena>2) T_busena=2; lcd.setCursor(10,0);
+                                                 lcd.setCursor(8,1); lcd.print("saldymas"); delay(200);}
+             if(veiksmas==2)  {T_busena--; if(T_busena<1) T_busena=1; lcd.setCursor(10,0);
+                                                 lcd.setCursor(8,1); lcd.print("sildymas"); delay(200);}
              if(veiksmas==4) // 0
                {
                  lcd.setCursor(0,0); lcd.print("Busena        OK"); delay(2000); // 0
                  lcd.setCursor(0,0); lcd.print("                "); // 0
-                 lcd.setCursor(1,0);lcd.print(eilute1);           // 0
-                 menu.moveDown();
+                 //lcd.setCursor(1,0);lcd.print(eilute1);           // 0
                }
              } 
          } klaviaturos_pasikeitimas=veiksmas;
  }
  
 }
-// --- Reakcja na wci�ni�cie klawisza -----------------------------------------------------------------
+// --- Reakcja na wciśnięcie klawisza -----------------------------------------------------------------
 void menuChangeEvent(MenuChangeEvent changed)  // funkcja klasy MenuBackend 
 {
   if(changed.to.getName()==menu.getRoot())
@@ -154,11 +151,10 @@ void menuChangeEvent(MenuChangeEvent changed)  // funkcja klasy MenuBackend
     LCD_T_sablonas();
     Temperaturu_vaizdavimas();
   }
-  /* tak naprawd� to tylko tutaj przydaje si� �w shortkey i s�u�y przede wszystkim do wzbogacenia menu
-     o symbole strza�ek w zale�no�ci co wybrano. Wszystko co tutaj si� wyprawia jest pokazywane na LCD. 
+  /* tak naprawdę to tylko tutaj przydaje się ów shortkey i służy przede wszystkim do wzbogacenia menu
+     o symbole strzałek w zależności co wybrano. Wszystko co tutaj się wyprawia jest pokazywane na LCD. 
   */
   int c=changed.to.getShortkey();                         // pobieramy shortkey (1,2,3, lub4)
-  lcd.clear();                                            // bez komentarza 
   lcd.setCursor(0,0); 
   if(c==1)                                                // jeśli to menu głowne (shortkey=1) to:
     {InMenu =true;
@@ -166,8 +162,9 @@ void menuChangeEvent(MenuChangeEvent changed)  // funkcja klasy MenuBackend
     strcpy(eilute1,changed.to.getName());                  // tworzymy napis w pierwszej linii
     lcd.print(eilute1);                                    // wyświetlamy ją
     lcd.setCursor(15,0);lcd.write(4);                     // strzałka w prawo
-    lcd.setCursor(0,1);lcd.write(5);                      // strzałka w dół
+    lcd.setCursor(0,1);lcd.write(5); lcd.print("                  ");   
     lcd.setCursor(15,1);lcd.write(5);                     // strzałka w dół
+    lcd.setCursor(0,2);lcd.print("                    "); // išvaloma 3 eilutė, kai atsiduriama meniu nr.1
     }
     if(c==2)                                              // jeśli to podmenu dla dziecka - (shortkey=2) to:
     {InMenu =true;
@@ -175,17 +172,18 @@ void menuChangeEvent(MenuChangeEvent changed)  // funkcja klasy MenuBackend
     strcpy(eilute2,changed.to.getName());                  // tworzymy napis w pierwszej linii
     lcd.print(eilute1);                                    // wyświetlamy ją
     lcd.setCursor(15,0);lcd.print("*");                   // gwiazdka 
-    lcd.setCursor(0,1);lcd.write(6);                      // druga linia i strzałka powrotu (arrowBack)
-    lcd.print(changed.to.getName());                      // wyświetlamy nazwe "dziecka"
+    lcd.setCursor(0,1);lcd.write(6); lcd.print("                  ");                     // druga eilute i strzałka powrotu (arrowBack)
+    lcd.setCursor(1,1);lcd.print(changed.to.getName());                      // wyświetlamy nazwe "dziecka"
     lcd.setCursor(15,1);lcd.write(7);                     // strzałka góra-dół
     }
+    
     if(c==3)                                              // jeśli dziecko  ma dziecko - (shortkey =3) to:
     {InMenu =true;
     lcd.print("*");                                       // gwiazdka
-    strcpy(eilute2,changed.to.getName());                  // kopiujemy akt. nazwe opcji menu do zmiennej linia2
+    strcpy(eilute2,changed.to.getName());                  // kopiujemy akt. nazwe opcji menu do klaviaturos_pasikeitimasiennej eilute2
     lcd.print(eilute1);                                    // i wyświetlamy pierwszą linię
     lcd.setCursor(15,0);lcd.print("*");                   // gwiazdka
-    lcd.setCursor(0,1);lcd.write(6);                      // druga linia i strzałka arrowBack
+    lcd.setCursor(0,1);lcd.write(6);                      // druga eilute i strzałka arrowBack
     lcd.print(changed.to.getName());                      // wyświetlamy wnuka w drugiej linii
     lcd.setCursor(15,1);lcd.write(4);                     // strzałka w prawo bo są wnuki
     }
@@ -195,21 +193,21 @@ void menuChangeEvent(MenuChangeEvent changed)  // funkcja klasy MenuBackend
     lcd.print("*");                                       // gwaizdka
     lcd.print(eilute2);                                    // w pierwszej linii wyświetlamy dziecko ( czyli rodzica wnuka) 
     lcd.setCursor(15,0);lcd.print("*");                   // gwaizdka
-    lcd.setCursor(0,1);lcd.write(6);                      // druga linia i strzałka arrowBack
+    lcd.setCursor(0,1);lcd.write(6);                      // druga eilute i strzałka arrowBack
     lcd.print(changed.to.getName());                      // wyświetlamy wnuka
     lcd.setCursor(15,1);lcd.write(7);                     // strzałka góra-dół 
     } 
 }
 
-// --- analogin� 5 mygtuk� klaviat�ros nuskaitymo versija, DFRobot --------------------------------------
+// --- analoginė 5 mygtukų klaviatūros nuskaitymo versija, DFRobot --------------------------------------
 volatile int Klaviaturos_skaitymas(int analog)
 {
    int stan_Analog = analogRead(analog);delay(30);//Serial.println(stan_Analog); 
    if (stan_Analog > 1000) return -1; // riba
-   if (stan_Analog < 50)   return 3;  // � de�in� 
-   if (stan_Analog < 200)  return 1;  // Vir�un 
-   if (stan_Analog < 400)  return 2;  // �emyn� 
-   if (stan_Analog < 600)  return 0;  // � kair�  
+   if (stan_Analog < 50)   return 3;  // Į dešinę 
+   if (stan_Analog < 200)  return 1;  // Viršun 
+   if (stan_Analog < 400)  return 2;  // Žemyn‚ 
+   if (stan_Analog < 600)  return 0;  // Į kairę  
    if (stan_Analog < 800)  return 4;  // OK 
    return -1;                         // Nepaspaustas
 }
@@ -225,6 +223,8 @@ void setup()
     digitalWrite(BackLight_Pin,HIGH);
   eilute1=new char[20]; 
   eilute2=new char[20];
+  eilute3=new char[20];  
+
                         
   Serial.begin(9600);   
   lcd.begin(16, 2);    
@@ -232,7 +232,7 @@ void setup()
 
 
 
-  lcd.createChar(3,arrowLeft);    // LCD �enklas kair�n
+  lcd.createChar(3,arrowLeft);    // LCD ženklas kairėn
   lcd.createChar(4,arrowRight);
   lcd.createChar(5,arrowDown);
   lcd.createChar(6,arrowBack);
@@ -246,7 +246,7 @@ void setup()
    K_sensor.begin();B_sensor.begin();
    T_sensor.begin();
    
-  pinMode(13,OUTPUT);digitalWrite(13,LOW); // tik testas 
+  pinMode(13,OUTPUT);digitalWrite(13,HIGH); // tik testas 
   pinMode(Rele_K,OUTPUT);pinMode(Rele_T,OUTPUT);
   digitalWrite(Rele_K,HIGH);digitalWrite(Rele_T,HIGH);
   menuSetup(); 
@@ -264,36 +264,36 @@ void setup()
   // ************************ PROGRAMOS PRADZIA void loop() *******************************
 void loop()    
 {
-  // jei ekranas, nespaudant mygtuk�, �vie�ia ilgiau negu u�duota, pa�vietimas i�jungiamas
+  // jei ekranas, nespaudant mygtukų, šviečia ilgiau negu užduota, pašvietimas išjungiamas
       if (millis()- Ekrano_pasvietimo_ijungimo_laikas > Ekrano_pasvietimo_pertrauka) { 
       analogWrite(BackLight_Pin, 0);
       Backlighting = false;
       Ekrano_pasvietimo_ijungimo_laikas = millis();}
- // Paspaudus bet kok� klavi�� �jungiamas ekrano pa�vietimas, kai jis b�na i�jungtas  
+ // Paspaudus bet kokį klavišą įjungiamas ekrano pašvietimas, kai jis būna išjungtas  
 if ((x != -1) && (Backlighting == false)){ analogWrite(BackLight_Pin,lcd_pasvietimas*25);
                                             Backlighting = true;}
-// Jei meniu b�na neaktyvus ka�kiek laiko, tai gr��tama � pagrindin� program�
+// Jei meniu būna neaktyvus kažkiek laiko, tai grįžtama į pagrindinę programą
 //if ((x != -1) && (InMenu == true))Meniu_praleistas_neaktyvus_laikas = millis();
 //    else {if (millis()- Meniu_praleistas_neaktyvus_laikas > neaktyvus_meniu)
 //          menu.toRoot();
 //}
   x=Klaviaturos_skaitymas(Key_Pin);delay(30);             // odczytujemy stan klawiatury:
-  if(klaviaturos_pasikeitimas!=x)                               // jesli by�a klaviaturos_pasikeitimasiana stanu to :
+  if(klaviaturos_pasikeitimas!=x)                               // jesli była klaviaturos_pasikeitimasiana stanu to :
     {
       switch(x)                           // sprawdzamy co nacisnieto 
       {
-      case 0: menu.moveRight();break;     // jesli naci�ni�to klawisz w Prawo to przesu� menu w prawo
-      case 1: menu.moveUp();break;        // menu do g�ry
-      case 2: menu.moveDown();break;      // menu w d��
+      case 0: menu.moveRight();break;     // jesli naciśnięto klawisz w Prawo to przesuń menu w prawo
+      case 1: menu.moveUp();break;        // menu do góry
+      case 2: menu.moveDown();break;      // menu w dół
       case 3: menu.moveLeft();break;      // menu w lewo
-      case 4: menu.use();break;           // wci�ni�to OK wi�c skok do funkcji menuUseEvent(MenuUseEvend used)
-                                          // to w tej funkcji w�a�nie obs�ugujemy nasze Menu, tu sprawdzamy
-                                          // jak� opcj� wybrano i tutaj tworzymy kod do obslugi zdarzenia.
+      case 4: menu.use();break;           // wciśnięto OK więc skok do funkcji menuUseEvent(MenuUseEvend used)
+                                          // to w tej funkcji właśnie obsługujemy nasze Menu, tu sprawdzamy
+                                          // jaką opcję wybrano i tutaj tworzymy kod do obslugi zdarzenia.
       }
-    } klaviaturos_pasikeitimas=x;                               // przypisanie klaviaturos_pasikeitimasiennej klaviaturos_pasikeitimas warto�ci x po to, aby dlu�sze wciskanie tego
-                                          // samego klawisza nie powodowa�o ponownej generacji zdarzenia. 
-                                          // program reaguje na klaviaturos_pasikeitimasian� stanu klawiatury. 
-// Jeigu dabar neesame meniu viduje, tai vykdoma nuolatin� programa
+    } klaviaturos_pasikeitimas=x;                               // przypisanie klaviaturos_pasikeitimasiennej klaviaturos_pasikeitimas wartości x po to, aby dluższe wciskanie tego
+                                          // samego klawisza nie powodowało ponownej generacji zdarzenia. 
+                                          // program reaguje na klaviaturos_pasikeitimasianę stanu klawiatury. 
+// Jeigu dabar neesame meniu viduje, tai vykdoma nuolatinė programa
 if (InMenu == false){
   // laiko intervalas naudojamas LCD vaizdui atnaujinti
   if (millis() > Ekrano_rodmenu_atnaujinimo_laikas ) { 
@@ -311,20 +311,13 @@ if (InMenu == false){
 //Serial.print("Temperaturu matavimo laikas: ");  Serial.println(stop - start);
 Serial.print("K/ ");Serial.print(K);Serial.print(" B/ ");Serial.print(B);Serial.print(" T/ ");Serial.println(T);
 Serial.println("----");
-Serial.print("T_busena- ");Serial.println(T_busena);
-Serial.print("temperatura_1- ");Serial.print(temperatura_1);
-Serial.print("  temperatura_2- ");Serial.println(temperatura_2);
-Serial.println("----");
-Serial.print("k_ijungimo_skirtumas- ");Serial.print(k_ijungimo_skirtumas);
-Serial.print("  k_isjungimo_skirtumas- ");Serial.println(k_isjungimo_skirtumas);
-
 Serial.print("millis- ");Serial.println(millis()/1000);
 #endif
   }
 } 
 
 
-// matuojamos temperat�ros nurodytais laiko intervalais (temperaturu_matavimo_pertrauka)
+// matuojamos temperatūros nurodytais laiko intervalais (temperaturu_matavimo_pertrauka)
 /* +++++++++++++++++++++++++++ PIRMAS LYGIS ++++++++++++++++++++++++++++++++++++ */ 
 if (millis() > temperaturu_matavimo_laikas_1 ) { 
   temperaturu_matavimo_laikas_1 = millis() + temperaturu_matavimo_pertrauka_1;
@@ -333,22 +326,99 @@ if (millis() > temperaturu_matavimo_laikas_1 ) {
 if (millis() > Reliu_junginejimo_laikas ) 
  {
    Reliu_junginejimo_laikas=millis()+Reliu_junginejimo_pertrauka;
-   if (K-B>=k_ijungimo_skirtumas) digitalWrite(Rele_K,LOW);
-   if (K-B<=k_isjungimo_skirtumas) digitalWrite(Rele_K,HIGH);
-   
-  if (T_busena == 1) 
-   {//Jei šildymo režimas (T_busena = 1)
-    if (T <= temperatura_1) digitalWrite(Rele_T,LOW);
-    if (T >= temperatura_2) digitalWrite(Rele_T,HIGH);
-   }
-   if (T_busena == 2) 
-    {//Jei šaldymo režimas (T_busena = 2)
-     if (T >= temperatura_1) digitalWrite(Rele_T,LOW);
-     if (T <= temperatura_2) digitalWrite(Rele_T,HIGH);
-    }
-    if (T_busena == 3) 
-     {//Jei antra rele nereikalinga- režimas išjungta
-      digitalWrite(Rele_T,HIGH);
-     }
+   if (K-B >= k_ijungimo_skirtumas) digitalWrite(Rele_K,LOW);
+   if (K-B <= k_isjungimo_skirtumas) digitalWrite(Rele_K,HIGH);
+   //Jei šildymo režimas- T_busena=1
+   if (T_busena == 1) 
+   {
+    if (T >= temperatura_1) digitalWrite(Rele_T,HIGH);
+ }
+   //Jei šaldymo režimas- T_busena=2
  }
 }// === PABAIGA ===========================================================
+void LCD_T_sablonas(){
+  lcd.setCursor(0,0);  lcd.print("K"); lcd.setCursor(6,0);  lcd.print(" S");
+  lcd.setCursor(0,1);  lcd.print("B"); lcd.setCursor(6,1);  lcd.print(" T"); 
+}
+
+void Temperaturu_vaizdavimas(){
+lcd.setCursor(1,0); lcd.print(K); lcd.setCursor(8,0); lcd.print(K-B);//(int(K + 0.5));  
+lcd.setCursor(1,1); lcd.print(B); lcd.setCursor(8,1); lcd.print(T);//(int(K + 0.5));
+}
+boolean LoadConfig(){
+  if ((EEPROM.read(0) == 27) && (EEPROM.read(1) == 28) && 
+     (EEPROM.read(2) == 13) && (EEPROM.read(3) == 18)) {
+
+    if (EEPROM.read(4) == EEPROM.read(5)) k_ijungimo_skirtumas = EEPROM.read(4);  
+    if (EEPROM.read(6) == EEPROM.read(7)) k_isjungimo_skirtumas = EEPROM.read(6);
+    return true;
+  }
+  return false;
+}
+
+void SaveConfig(){
+  EEPROM.write(0,27);
+  EEPROM.write(1,28);
+  EEPROM.write(2,13);
+  EEPROM.write(3,18);
+  EEPROM.write(4,k_ijungimo_skirtumas);EEPROM.write(5,k_ijungimo_skirtumas);  // almacenamos los valores 2 veces
+  EEPROM.write(6,k_isjungimo_skirtumas); EEPROM.write(7,k_isjungimo_skirtumas);  // almacenamos los valores 2 veces
+
+}
+void Temperaturu_matavimas_1(){
+  //____________________________ Start Sensor 1 _________________________________
+#ifdef SetWaitForConversionFALSE
+  K_sensor.setWaitForConversion(false);  // makes it async
+#endif
+  K_sensor.requestTemperatures(); // Send the command to get temperatures
+  K=K_sensor.getTempCByIndex(0);
+//_____________________________ Stop Sensor 1 ___________________________________
+  //______________________ Start Sensor 3 ________________________________________
+  #ifdef SetWaitForConversionFALSE
+  T_sensor.setWaitForConversion(false);  // makes it async
+#endif
+  T_sensor.requestTemperatures(); // Send the command to get temperatures
+T=T_sensor.getTempCByIndex(0);
+//___________________ Stop Sensor 3 ______________________________________________
+//__________________________________________ Start Sensor 2 _____________________
+#ifdef SetWaitForConversionFALSE
+  B_sensor.setWaitForConversion(false);  // makes it async
+#endif
+  B_sensor.requestTemperatures(); // Send the command to get temperatures
+  B=B_sensor.getTempCByIndex(0);
+//_____________________________________ Stop Sensor 2 ____________________________
+}
+
+	   int MeniuFunkcija (String tekstas1, int KeiciamaReiksme, int MaxReiksme, int MinReiksme, String tekstas2)
+	        {
+        lcd.setCursor(0,0);lcd.write(7);     
+        lcd.setCursor(1,1);lcd.print(tekstas1); //("Nustatyta=   "); 
+        lcd.setCursor(11,1);lcd.print(KeiciamaReiksme); // rodoma esama reikšmė
+        int  veiksmas=-1; delay(1000);         // 
+                                           
+        while(veiksmas!=4)                   // 
+         {
+           klaviaturos_pasikeitimas=-1; 
+           veiksmas=Klaviaturos_skaitymas(Key_Pin); //delay(300);  
+                                            
+           if(klaviaturos_pasikeitimas!=veiksmas)           
+             {
+             if (veiksmas==1) {KeiciamaReiksme++; if(KeiciamaReiksme>MaxReiksme) KeiciamaReiksme=MaxReiksme; lcd.setCursor(11,1);
+                                                    if(KeiciamaReiksme<10) lcd.print(" ");
+                                                      lcd.print(KeiciamaReiksme); delay(200);}
+             if(veiksmas==2)  {KeiciamaReiksme--; if(KeiciamaReiksme<MinReiksme) KeiciamaReiksme=MinReiksme; lcd.setCursor(11,1);
+                                                     if(KeiciamaReiksme<10) lcd.print(" ");
+                                                       lcd.print(KeiciamaReiksme); delay(200);}
+             if(veiksmas==4) // 0
+               {
+                 lcd.setCursor(0,1); lcd.print(tekstas2); delay(2000); // 0
+                 lcd.setCursor(0,1); lcd.print("                "); // 0
+                 //lcd.setCursor(1,0);lcd.print(eilute1);           // 0
+               }
+             } 
+         } klaviaturos_pasikeitimas=veiksmas;  // aktualizacja klaviaturos_pasikeitimasiennej klaviaturos_pasikeitimas, po to aby reagowac tylko na klaviaturos_pasikeitimasiany stanu klawiatury
+         // tu WAZNY MOMENT - konczy sie petla while i zwracamy sterowanie do gl�wnej petli loop()
+         return KeiciamaReiksme;
+      }
+
+
