@@ -213,6 +213,8 @@ volatile int Klaviaturos_skaitymas(int analog)
    if (stan_Analog < 800)  return 4;  // OK 
    return -1;                         // Nepaspaustas
 }
+
+
 // ============================================================================================
 // 
 void setup()
@@ -251,9 +253,11 @@ void setup()
   digitalWrite(Rele_K,HIGH);digitalWrite(Rele_T,HIGH);
   menuSetup(); 
 //  menu.moveUp();      
-  K_Temperatura();
-  B_Temperatura();
-  T_Temperatura();
+
+
+  dallas(ONE_WIRE_BUS1);
+  dallas(ONE_WIRE_BUS2);
+  dallas(ONE_WIRE_BUS3);
 
  
   LCD_T_sablonas();
@@ -314,8 +318,9 @@ if (InMenu == false){
 Serial.print("K/ ");Serial.print(K);Serial.print(" B/ ");Serial.print(B);Serial.print(" T/ ");Serial.println(T);
 Serial.println("----");
 Serial.print("T_busena- ");Serial.println(T_busena);
-Serial.print("temperatura_1- ");Serial.print(temperatura_1);
-Serial.print("  temperatura_2- ");Serial.println(temperatura_2);
+Serial.print("temperatura_1- ");Serial.println(temperatura_1);
+Serial.print("temperatura_2- ");Serial.println(temperatura_2);
+
 Serial.println("----");
 Serial.print("k_ijungimo_skirtumas- ");Serial.print(k_ijungimo_skirtumas);
 Serial.print("  k_isjungimo_skirtumas- ");Serial.println(k_isjungimo_skirtumas);
@@ -330,9 +335,14 @@ Serial.print("millis- ");Serial.println(millis()/1000);
 /* +++++++++++++++++++++++++++ PIRMAS LYGIS ++++++++++++++++++++++++++++++++++++ */ 
 if (millis() > temperaturu_matavimo_laikas_1 ) { 
   temperaturu_matavimo_laikas_1 = millis() + temperaturu_matavimo_pertrauka_1;
-  K_Temperatura();
-  B_Temperatura();
-  T_Temperatura();
+K=    dallas(ONE_WIRE_BUS1);
+B=    dallas(ONE_WIRE_BUS2);
+T=    dallas(ONE_WIRE_BUS3);
+#ifdef DEBUGds18b20
+Serial.print("K= ");Serial.println(K);
+Serial.print("B= ");Serial.println(B);
+Serial.print("T= ");Serial.println(T);
+#endif
 }
 //------------------ kolektoriaus siurblio ir termostato valdymas-----------------------//
 if (millis() > Reliu_junginejimo_laikas ) 

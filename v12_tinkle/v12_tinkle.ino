@@ -5,7 +5,7 @@
  #include <MenuBackend.h>        
   #include <LiquidCrystal.h>         
  #include <OneWire.h>
-#include <DallasTemperature.h>
+//#include <DallasTemperature.h>
  #include <EEPROM.h>
 #include "definitions.h"
 
@@ -279,15 +279,17 @@ void setup()
     lcd.setCursor(0,1); 
     lcd.print("      v1.2"); delay(2999);
  lcd.clear();
-   K_sensor.begin();B_sensor.begin();
-   T_sensor.begin();
+//   K_sensor.begin();B_sensor.begin(); T_sensor.begin();
    
   pinMode(13,OUTPUT);digitalWrite(13,LOW); // tik testas 
   pinMode(Rele_K,OUTPUT);pinMode(Rele_T,OUTPUT);
   digitalWrite(Rele_K,HIGH);digitalWrite(Rele_T,HIGH);
   menuSetup(); 
 //  menu.moveUp();      
-  Temperaturu_matavimas_1();
+  dallas(ONE_WIRE_BUS1);
+  dallas(ONE_WIRE_BUS2);
+  dallas(ONE_WIRE_BUS3);
+
 
  
   LCD_T_sablonas();
@@ -365,7 +367,10 @@ Serial.print("millis- ");Serial.println(millis()/1000);
 /* +++++++++++++++++++++++++++ PIRMAS LYGIS ++++++++++++++++++++++++++++++++++++ */ 
 if (millis() > temperaturu_matavimo_laikas_1 ) { 
   temperaturu_matavimo_laikas_1 = millis() + temperaturu_matavimo_pertrauka_1;
-  Temperaturu_matavimas_1();}
+  dallas(ONE_WIRE_BUS1);
+  dallas(ONE_WIRE_BUS2);
+  dallas(ONE_WIRE_BUS3);
+}
 //------------------ kolektoriaus siurblio ir termostato valdymas-----------------------//
 if (millis() > Reliu_junginejimo_laikas ) 
  {

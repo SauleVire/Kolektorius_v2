@@ -1,8 +1,7 @@
 /* @@@@@@@@@@@@@@@@@@@@@@ testavimui @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
 // #define DEBUG 
- #define SetWaitForConversionFALSE // pagreitintas ds18b20 temperatūrų matavimas
 
-#define DEBUGds18b20 // temperatūrų matavimo testavimui 
+//#define DEBUGds18b20 // temperatūrų matavimo testavimui 
 // #define DEBUGbusena
 
 /* ********************** Laikai *************************************** */
@@ -44,14 +43,14 @@ byte arrow_down[8]={ B00100,B00100,B00100,B00100,B00100,B11111,B01110,B00100};
 #define ONE_WIRE_BUS3 A3 // Termostatas
 
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
-OneWire K_t(ONE_WIRE_BUS1); //katilo isejimas
-OneWire B_t(ONE_WIRE_BUS2); //saules kolektorius
-OneWire T_t(ONE_WIRE_BUS3); //pamaisymo voztuvas
+//OneWire K_t(ONE_WIRE_BUS1); //katilo isejimas
+//OneWire B_t(ONE_WIRE_BUS2); //saules kolektorius
+//OneWire T_t(ONE_WIRE_BUS3); //pamaisymo voztuvas
 
 // Pass our oneWire reference to Dallas Temperature. 
-DallasTemperature K_sensor(&K_t);
-DallasTemperature B_sensor(&B_t);
-DallasTemperature T_sensor(&T_t);
+//DallasTemperature K_sensor(&K_t);
+//DallasTemperature B_sensor(&B_t);
+//DallasTemperature T_sensor(&T_t);
 
 //kintamieji saugoti ismatuotoms temperaturu reiksmems
 float K,B,T; 

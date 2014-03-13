@@ -1,87 +1,55 @@
-void K_Temperatura(void){
-  K_t.reset();
-  K_t.skip();
-  // start conversion and return
-  if (!(Conv_start1)){
-    K_t.write(0x44,0);
-    Conv_start1 = true;
-    return;
+float dallas(int x)
+{
+OneWire ds(x);
+  //returns the temperature from one DS18S20 in DEG Celsius
+  byte i;
+  byte data[12];
+  byte addr[8];
+  float result;
+  if ( !ds.search(addr)) 
+  {
+      ds.reset_search();
+      return -99; // no more sensors on chain, reset search
   }
-  // check for conversion if it isn't complete return if it is then convert to decimal
-  if (Conv_start1){
-    Busy1 = K_t.read_bit();
-    if (Busy1 == 0){
-      return;
-    }
-    K_t.reset();
-    K_t.skip();
-    K_t.write(0xBE);  
-    for ( int i = 0; i < 2; i++) {           // we need 2 bytes
-      data1[i] = K_t.read();
-    } 
-    unsigned int raw = (data1[1] << 8) + data1[0];
 
-    K = (raw & 0xFFFC) * 0.0625; 
-    Conv_start1 = false;
-    return;
-  } 
-
-}
-void B_Temperatura(void){
-  B_t.reset();
-  B_t.skip();
-  // start conversion and return
-  if (!(Conv_start2)){
-    B_t.write(0x44,0);
-    Conv_start2 = true;
-    return;
+  if ( OneWire::crc8( addr, 7) != addr[7]) 
+  {
+      return -88; //CRC is not valid!
   }
-  // check for conversion if it isn't complete return if it is then convert to decimal
-  if (Conv_start2){
-    Busy2 = B_t.read_bit();
-    if (Busy2 == 0){
-      return;
-    }
-    B_t.reset();
-    B_t.skip();
-    B_t.write(0xBE);  
-    for ( int i = 0; i < 2; i++) {           // we need 2 bytes
-      data2[i] = B_t.read();
-    } 
-    unsigned int raw = (data2[1] << 8) + data2[0];
 
-    B = (raw & 0xFFFC) * 0.0625; 
-    Conv_start2 = false;
-    return;
-  } 
-
-}
-void T_Temperatura(void){
-  T_t.reset();
-  T_t.skip();
-  // start conversion and return
-  if (!(Conv_start3)){
-    T_t.write(0x44,0);
-    Conv_start3 = true;
-    return;
+  if ( addr[0] != 0x28) 
+  {
+     return -77; // Device is not recognized
   }
-  // check for conversion if it isn't complete return if it is then convert to decimal
-  if (Conv_start3){
-    Busy3 = T_t.read_bit();
-    if (Busy3 == 0){
-      return;
-    }
-    T_t.reset();
-    T_t.skip();
-    T_t.write(0xBE);  
-    for ( int i = 0; i < 2; i++) {           // we need 2 bytes
-      data3[i] = T_t.read();
-    } 
-    unsigned int raw = (data3[1] << 8) + data3[0];
 
-    T = (raw & 0xFFFC) * 0.0625; 
-    Conv_start3 = false;
-    return;
-  } 
+  ds.reset();
+  ds.select(addr);
+  ds.write(0x44,1); // start conversion
+//  delay(850); // Wait some time...
+  
+  ds.reset();   // byte present = ds.reset();
+  ds.select(addr);    
+  ds.write(0xBE); // Read Scratchpad command
 
+  for (int i = 0; i < 9; i++)  // Receive 9 bytes
+  { 
+    data[i] = ds.read();
+  }
+  
+ // ds.reset_search();
+  
+  // memory consuming but readable code:
+/*  byte MSB = data[1];
+  byte LSB = data[0];
+
+  float tempRead = ((MSB << 8) | LSB); //using two's compliment
+  float TemperatureSum = tempRead / 16;  // 1/16 = 0.0625
+  return TemperatureSum;
+  
+    
+  return ( (data[1] << 8) + data[0] )*0.0625 ;
+ */
+   unsigned int raw = (data[1] << 8) | data[0];
+       byte cfg = (data[4] & 0x60);
+       return raw / 16.0;
 }
