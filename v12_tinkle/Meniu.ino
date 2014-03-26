@@ -3,7 +3,7 @@
 	        {
         lcd.setCursor(0,0);lcd.write(7);     
         lcd.setCursor(1,1);lcd.print(tekstas1); //("Nustatyta=   "); 
-        lcd.setCursor(11,1);lcd.print(KeiciamaReiksme); // rodoma esama reikšmė
+        lcd.setCursor(11,1);lcd.print(KeiciamaReiksme); // rodoma esama reikÅ�mÄ—
         int  veiksmas=-1; delay(1000);         // 
                                            
         while(veiksmas!=4)                   // 
@@ -29,7 +29,8 @@
                }
              } 
          } klaviaturos_pasikeitimas=veiksmas;  // aktualizacja klaviaturos_pasikeitimasiennej klaviaturos_pasikeitimas, po to aby reagowac tylko na klaviaturos_pasikeitimasiany stanu klawiatury
-         // tu WAZNY MOMENT - konczy sie petla while i zwracamy sterowanie do gl�wnej petli loop()
+         // tu WAZNY MOMENT - konczy sie petla while i zwracamy sterowanie do glļæ½wnej petli loop()
          return KeiciamaReiksme;
       }
+
 

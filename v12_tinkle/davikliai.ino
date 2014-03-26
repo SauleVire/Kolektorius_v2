@@ -53,3 +53,4 @@ OneWire ds(x);
        byte cfg = (data[4] & 0x60);
        return raw / 16.0;
 }
+

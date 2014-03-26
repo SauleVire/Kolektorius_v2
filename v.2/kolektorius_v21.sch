@@ -18407,7 +18407,7 @@ Grid 2.54 mm&lt;p&gt;
 <part name="GND1" library="SparkFun" deviceset="GND" device=""/>
 <part name="R18" library="rcl" deviceset="R-EU_" device="R0805" value="47"/>
 <part name="R19" library="rcl" deviceset="R-EU_" device="R0805" value="47"/>
-<part name="X2" library="SparkFun" deviceset="CRYSTAL" device="HC49US" value="25MHz"/>
+<part name="X2" library="SparkFun" deviceset="CRYSTAL" device="HC49US" value="16MHz"/>
 <part name="C8" library="resistor" deviceset="C-EU" device="C0805" value="22p"/>
 <part name="C9" library="resistor" deviceset="C-EU" device="C0805" value="22p"/>
 <part name="GND3" library="SparkFun" deviceset="GND" device=""/>

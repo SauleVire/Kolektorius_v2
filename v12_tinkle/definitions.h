@@ -1,7 +1,7 @@
 /* @@@@@@@@@@@@@@@@@@@@@@ testavimui @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
 // #define DEBUG 
 
-//#define DEBUGds18b20 // temperatūrų matavimo testavimui 
+//#define DEBUGds18b20 // temperatÅ«rÅ³ matavimo testavimui 
 // #define DEBUGbusena
 
 /* ********************** Laikai *************************************** */
@@ -22,16 +22,16 @@ unsigned long Ekrano_rodmenu_atnaujinimo_laikas = 0;
 
 /* ************** LKLAVIATUROS KINTAMIEJI ************************************* */
 #define Key_Pin 0
-volatile int klaviaturos_pasikeitimas =-1;               // Tikrinti ar pasikeitė klaviatūros reikšmė
+volatile int klaviaturos_pasikeitimas =-1;               // Tikrinti ar pasikeitÄ— klaviatÅ«ros reikÅ�mÄ—
 volatile int x=-1;                 // 
 volatile int stan_Analog;          // 
 /* ********** LCD aprasymas ******************* */
 #define BackLight_Pin 8 //LCD pasvietimo isvadas (standart LCD KeeyPad use pin 10)
 byte lcd_pasvietimas = 10; // lcd_pasvietimas * 25 = MAX LCD apsviestumas
 boolean Backlighting = true; // zyme ekrano pasvietimui
-//Siurblio įjungimo simbolis (rodyklė į viršų)
+//Siurblio ÄÆjungimo simbolis (rodyklÄ— ÄÆ virÅ�Å³)
 byte arrow_up[8]={ B00100,B01110,B11111,B00100,B00100,B00100,B00100,B00100};
-//Siurblio įšungimo simbolis (rodyklė į žemyn)
+//Siurblio ÄÆÅ�ungimo simbolis (rodyklÄ— ÄÆ Å¾emyn)
 byte arrow_down[8]={ B00100,B00100,B00100,B00100,B00100,B11111,B01110,B00100};
 
 /* ******************** reles *********************************** */
@@ -56,11 +56,11 @@ byte arrow_down[8]={ B00100,B00100,B00100,B00100,B00100,B11111,B01110,B00100};
 float K,B,T; 
 /* ********** kintamieji Kieto kuro katilui ******************* */
 /* ********** kintamieji Dujiniam katilui ******************* */
-/* ********** kintamieji saulės kolektoriui ******************* */
+/* ********** kintamieji saulÄ—s kolektoriui ******************* */
 byte k_ijungimo_skirtumas = 5;
 byte k_isjungimo_skirtumas = 3;
 boolean k_uzsalimas = false;
-boolean SK_nuorinimas = false; // Žymė rankiniam SK siurblio valdymui (nuorinimas)
+boolean SK_nuorinimas = false; // Å½ymÄ— rankiniam SK siurblio valdymui (nuorinimas)
 /* ********** kintamieji Termostatui ******************* */
 byte temperatura_1 = 20;
 byte temperatura_2 = 25;
@@ -70,6 +70,7 @@ byte T_busena =1;
 /* ********************************************************************** */
 /* ************************************************************************ */
 /* ********** kintamieji siurbliams ******************* */
-/* ---------------- kintamieji motorizuotiems vožtuvams -------------------- */
+/* ---------------- kintamieji motorizuotiems voÅ¾tuvams -------------------- */
+
 
 
