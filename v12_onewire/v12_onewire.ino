@@ -7,7 +7,30 @@
 #include <DallasTemperature.h>
  #include <EEPROM.h>
 #include "definitions.h"
+#include <EtherCard.h>
 
+#define STATIC 1  // set to 1 to disable DHCP (adjust myip/gwip values below)
+
+#if STATIC
+// ethernet interface ip address
+static byte myip[] = { 192,168,1,2 };
+// gateway ip address
+static byte gwip[] = { 192,168,1,254 };
+// dns ip address
+static byte dnsip[] = { 192,168,1,254 };
+#endif
+
+// ethernet mac address - must be unique on your network
+static byte mymac[] = { 0x74,0x69,0x69,0x2D,0x30,0x31 };
+
+byte Ethernet::buffer[250]; // tcp/ip send and receive buffer
+unsigned long Ethernet_timer;
+
+char website[] PROGMEM = "saulevire.lt";
+
+// This is the char array that holds the reply data
+char line_buf[33];
+  
 
   // --- definiujemy dla LCD w�asne znaki strza�ek: d��, lewo, prawo, gora-d�� i powr�t ---
 uint8_t arrowUpDown[8] = {0x4,0xe,0x15,0x4,0x15,0xe,0x4};
@@ -219,17 +242,35 @@ volatile int Klaviaturos_skaitymas(int analog)
 // 
 void setup()
 {
+#ifdef DEBUGds18b20                        
+  Serial.begin(9600);   
+#endif
+  /* ********************************************************* */
  LoadConfig(); 
+  /* ********************************************************* */
+  if (ether.begin(sizeof Ethernet::buffer, mymac,10) == 0) 
+    Serial.println( "Failed to access Ethernet controller");
+#if STATIC
+  ether.staticSetup(myip, gwip, dnsip);
+#else
+  if (!ether.dhcpSetup())
+    Serial.println("DHCP failed");
+#endif
+  ether.printIp("IP:  ", ether.myip);
+  ether.printIp("GW:  ", ether.gwip);  
+  ether.printIp("DNS: ", ether.dnsip);  
 
+  if (!ether.dnsLookup(website))
+    Serial.println("DNS failed");
+    
+  ether.printIp("SRV: ", ether.hisip);
   /* ********************************************************* */
 
   pinMode(BackLight_Pin, OUTPUT);
     digitalWrite(BackLight_Pin,HIGH);
   eilute1=new char[20]; 
   eilute2=new char[20];
-#ifdef DEBUGds18b20                        
-  Serial.begin(9600);   
-#endif
+
   lcd.begin(16, 2);    
   lcd.clear();
 
@@ -270,6 +311,7 @@ void setup()
   // ************************ PROGRAMOS PRADZIA void loop() *******************************
 void loop()    
 {
+
   // jei ekranas, nespaudant mygtuk�, �vie�ia ilgiau negu u�duota, pa�vietimas i�jungiamas
       if (millis()- Ekrano_pasvietimo_ijungimo_laikas > Ekrano_pasvietimo_pertrauka) { 
       analogWrite(BackLight_Pin, 0);
@@ -343,6 +385,50 @@ Serial.print("K= ");Serial.println(K);
 Serial.print("B= ");Serial.println(B);
 Serial.print("T= ");Serial.println(T);
 #endif
+
+}
+     
+
+ether.packetLoop(ether.packetReceive());
+  if ((millis()-Ethernet_timer)>5000) {
+    Ethernet_timer = millis();
+    Serial.println("Request sent");
+/*    strcpy(str,"/input/post?apikey=5f95184d8faf89cfe4ea1e0fd9aad868&json={");                //URL
+ //   str[0]='\0';
+ //   srtJSON(str);                                   //Start JSON
+    addJSON(str,"b",B);       //JSON line 1 - add more lines as needed
+    addJSON(str,"k",K);    //JSON line 2 - add more lines as needed 
+    endJSON(str);
+    Serial.println(str);
+    Serial.println(strlen(str));
+    // Make our request - here we ask for the emoncms feed value
+    // Emoncms.org account example username: switch, password: switch
+//    ether.browseUrl(PSTR("/feed/value.json?apikey=4defc9b6fef3aec2aecb538638b471c4&id=8656"),"", website, my_callback);
+//ether.browseUrl(PSTR("/input/post?apikey=5f95184d8faf89cfe4ea1e0fd9aad868&json="),"str", website, my_callback);
+//ether.browseUrl(PSTR("/input/post?apikey=5f95184d8faf89cfe4ea1e0fd9aad868&json="),"str", website, my_callback);
+ether.browseUrl(PSTR(""),"str", website, my_callback);
+//  }
+*/
+
+char string_temp1[5];
+dtostrf(K, 2, 2, string_temp1);
+char string_temp2[5];
+dtostrf(B, 2, 2, string_temp2);
+
+Stash stash;
+byte K_t = stash.create();
+stash.print(string_temp1);
+//stash.save();
+//Stash stash;
+byte B_t = stash.create();
+stash.print(string_temp2);
+stash.save();
+
+Stash::prepare(PSTR("GET /emoncms/input/post?apikey=fc315a15e2f18c816cae67d172947bd8&json={boileris:$H,kolektorius:$H} HTTP/1.0" "\r\n"
+    "Host: $F" "\r\n" "\r\n"),
+    B_t, K_t, website, my_callback);
+ ether.tcpSend();
+
 }
 //------------------ kolektoriaus siurblio ir termostato valdymas-----------------------//
 if (millis() > Reliu_junginejimo_laikas ) 
