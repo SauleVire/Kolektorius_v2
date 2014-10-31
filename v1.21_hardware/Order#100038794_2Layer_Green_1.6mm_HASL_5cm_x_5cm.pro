@@ -1,9 +1,9 @@
 EAGLE AutoRouter Statistics:
 
-Job           : C:/Users/asinkunas/Documents/GitHub/Kolektorius_v2/v1.21_hardware/solar_collector_controller_V1.21.brd
+Job           : C:/Darbas/GitHub/Kolektorius_v2/v1.21_hardware/solar_collector_controller_V1.21.brd
 
-Start at      : 15:55:17 (2014.10.30)
-End at        : 15:55:19 (2014.10.30)
+Start at      : 13:05:49 (2014.10.31)
+End at        : 13:05:50 (2014.10.31)
 Elapsed time  : 00:00:01
 
 Signals       :    31   RoutingGrid: 3.14961 mil  Layers: 2
@@ -13,7 +13,7 @@ Router memory :   2111200
 
 Passname          :     Route Optimize1 Optimize2 Optimize3 Optimize4
 
-Time per pass     :  00:00:00  00:00:00  00:00:00  00:00:01  00:00:00
+Time per pass     :  00:00:00  00:00:00  00:00:01  00:00:00  00:00:00
 Number of Ripups  :         0         0         0         0         0
 max. Level        :         0         0         0         0         0
 max. Total        :         0         0         0         0         0
