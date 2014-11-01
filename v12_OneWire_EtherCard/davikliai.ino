@@ -1,31 +1,23 @@
-float dallas(int x)
+//float dallas(int x) // jei davikliai ant atskiru isvadu
+float Dallas (byte addr[8])
 {
-OneWire ds(x);
+//OneWire ds(x);// jei davikliai ant atskiru isvadu
   //returns the temperature from one DS18S20 in DEG Celsius
-  byte i;
   byte data[12];
-  byte addr[8];
-  float result;
-  if ( !ds.search(addr)) 
-  {
-      ds.reset_search();
-      return -99; // no more sensors on chain, reset search
-  }
-
+//  byte addr[8];// jei davikliai ant atskiru isvadu
+//  float result;
+ // if ( !ds.search(addr)) 
+ // {   ds.reset_search();  return -99;  }// no more sensors on chain, reset search
   if ( OneWire::crc8( addr, 7) != addr[7]) 
-  {
-      return -88; //CRC is not valid!
-  }
-
+  {   return -88; }//CRC is not valid!
   if ( addr[0] != 0x28) 
-  {
-     return -77; // Device is not recognized
-  }
+  {   return -77; }// Device is not recognized
+  
 
   ds.reset();
   ds.select(addr);
   ds.write(0x44,1); // start conversion
-//  delay(850); // Wait some time...
+  delay(850); // Wait some time...
   
   ds.reset();   // byte present = ds.reset();
   ds.select(addr);    
@@ -53,4 +45,3 @@ OneWire ds(x);
        byte cfg = (data[4] & 0x60);
        return raw / 16.0;
 }
-

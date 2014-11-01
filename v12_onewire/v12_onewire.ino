@@ -4,10 +4,11 @@
  #include <MenuBackend.h>        
   #include <LiquidCrystal.h>         
  #include <OneWire.h>
-#include <DallasTemperature.h>
  #include <EEPROM.h>
 #include "definitions.h"
 #include <EtherCard.h>
+
+#define DEBUGds18b20 // for temperature measurement testing 
 
 #define STATIC 1  // set to 1 to disable DHCP (adjust myip/gwip values below)
 
@@ -27,6 +28,7 @@ byte Ethernet::buffer[250]; // tcp/ip send and receive buffer
 unsigned long Ethernet_timer;
 
 char website[] PROGMEM = "saulevire.lt";
+//char website[] PROGMEM = "emoncms.org";
 
 // This is the char array that holds the reply data
 char line_buf[33];
@@ -285,7 +287,7 @@ void setup()
     lcd.setCursor(0,0); 
     lcd.print("www.SauleVire.lt");
     lcd.setCursor(0,1); 
-    lcd.print("      v1.2"); delay(2999);
+    lcd.print(" v1.2 ethernet"); delay(2999);
  lcd.clear();
   // K_sensor.begin();B_sensor.begin(); T_sensor.begin();
    
@@ -348,11 +350,6 @@ if (InMenu == false){
   Ekrano_rodmenu_atnaujinimo_laikas = millis() + Ekrano_rodmenu_atnaujinimo_pertrauka;
   LCD_T_sablonas();
   Temperaturu_vaizdavimas();
-
-  //#ifdef DEBUGds18b20
-//Serial.println("Temperaturu_matavimas");
-//unsigned long start = millis();
-//#endif
   
 #ifdef DEBUGds18b20
 //unsigned long stop = millis();
@@ -414,6 +411,8 @@ char string_temp1[5];
 dtostrf(K, 2, 2, string_temp1);
 char string_temp2[5];
 dtostrf(B, 2, 2, string_temp2);
+char string_temp3[5];
+dtostrf(T, 2, 2, string_temp3);
 
 Stash stash;
 byte K_t = stash.create();
@@ -422,11 +421,14 @@ stash.print(string_temp1);
 //Stash stash;
 byte B_t = stash.create();
 stash.print(string_temp2);
+byte T_t = stash.create();
+stash.print(string_temp3);
 stash.save();
 
-Stash::prepare(PSTR("GET /emoncms/input/post?apikey=fc315a15e2f18c816cae67d172947bd8&json={boileris:$H,kolektorius:$H} HTTP/1.0" "\r\n"
+Stash::prepare(PSTR("GET /stebesena/input/post?apikey=554b64debcdaf09b82ea9cd392462c2c&json={boileris:$H,kolektorius:$H,T:$H} HTTP/1.0" "\r\n"
+//Stash::prepare(PSTR("GET /input/post?apikey=5f95184d8faf89cfe4ea1e0fd9aad868&json={boileris:$H,kolektorius:$H} HTTP/1.0" "\r\n"
     "Host: $F" "\r\n" "\r\n"),
-    B_t, K_t, website, my_callback);
+    B_t, K_t, T_t, website, my_callback);
  ether.tcpSend();
 
 }

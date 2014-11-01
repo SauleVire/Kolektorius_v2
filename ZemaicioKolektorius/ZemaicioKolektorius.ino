@@ -1,50 +1,67 @@
 // ============= KKK valdinlis v2.1 ===============================================
-#include <EtherCard.h>
 
 #include <Wire.h>
  #include <MenuBackend.h>        
   #include <LiquidCrystal.h>         
  #include <OneWire.h>
-#include <DallasTemperature.h>
  #include <EEPROM.h>
 #include "definitions.h"
+#include <EtherCard.h>
 
-////////////////// ksduino start ////////////////////////
-#define BUFFER_SIZE 200
-byte Ethernet::buffer [BUFFER_SIZE];  
+#define DEBUGds18b20 // for temperature measurement testing 
+int enc28j60_CS=8;
+#define STATIC 1  // set to 1 to disable DHCP (adjust myip/gwip values below)
 
-#include <KSduino.h>
+#if STATIC
+// ethernet interface ip address
+static byte myip[] = { 192,168,1,3 };
+// gateway ip address
+static byte gwip[] = { 192,168,1,254 };
+// dns ip address
+static byte dnsip[] = { 192,168,1,254 };
+#endif
+int dhcp_status = 1;
+int dns_status = 1;
+int ethernet_error = 0;                   // Etherent (controller/DHCP) error flag
+// change to true if you would like the sketch to use hisip
+// or if your posting to a static IP server:
+static byte hisip[] = { 192,168,1,10 };
 
-// User definition -----------------------------------------------------
+// change to true if you would like the sketch to use hisip
+boolean use_hisip = false;  
 
-// Change this values to yours
+// ethernet mac address - must be unique on your network
+static byte mymac[] = { 0x74,0x69,0x69,0x7D,0x30,0x31 };
+// 2) If your emoncms install is in a subdirectory add details here i.e "/emoncms3"
+//char basedir[] = "/stebesena";
 
-// Your Arduinos ID & Password
-unsigned int deviceID = 0000;
-unsigned int devicePwd = 0000;
+// 3) Set to your account write apikey 
+//char apikey[] = "apiykey";
 
-// Your Arduinos MAC, IP & port used in your local network
-byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0x0D };
-byte ip[] = { 192, 168, 0, 222 };
-byte dns[] = { 192, 168, 0, 1 };
-byte gateway [] = { 192, 168, 0, 1 };
-unsigned int port = 58833;
+byte Ethernet::buffer[350]; // tcp/ip send and receive buffer
+unsigned long Ethernet_timer;
 
-// Server definition -----------------------------------------------------
+char website[] PROGMEM = "saulevire.lt";
+//char website[] PROGMEM = "emoncms.org";
 
-// Do not change this values
-
-// KSduino Server address & port
-byte serverIp[] = { 178,63,53,233 };
-unsigned int serverPort = 9930;
-
-// ----------------------------------------------------------------------------
-
-// Create KSduino class
-KSduino ksd (deviceID, devicePwd, serverIp, serverPort);
-
-////////////////// ksduino stop /////////////////////////
-
+ 
+class PacketBuffer : public Print {
+public:
+    PacketBuffer () : fill (0) {}
+    const char* buffer() { return buf; }
+    byte length() { return fill; }
+    void reset()
+    { 
+      memset(buf,NULL,sizeof(buf));
+      fill = 0; 
+    }
+    virtual size_t write (uint8_t ch)
+        { if (fill < sizeof buf) buf[fill++] = ch; }
+    byte fill;
+    char buf[150];
+    private:
+};
+PacketBuffer str;
   // --- definiujemy dla LCD w�asne znaki strza�ek: d��, lewo, prawo, gora-d�� i powr�t ---
 uint8_t arrowUpDown[8] = {0x4,0xe,0x15,0x4,0x15,0xe,0x4};
 uint8_t arrowDown[8]  = {0x4,0x4,0x4,04,0x15,0xe,0x4};
@@ -106,7 +123,7 @@ void menuSetup()                       // funkcja klasy MenuBackend
 void menuUseEvent(MenuUseEvent used)      // funkcja klasy MenuBackend - reakcja na wci�ni�cie OK
                                           // tutaj w�a�nie oddajemy menu na rzecz akcji obs�ugi klawisza OK
 {
-//   Serial.print("pasirinkta:  "); Serial.println(used.item.getName()); // do test�w, potem niepotrzebne
+   Serial.print(F("pasirinkta:  ")); Serial.println(used.item.getName()); // do test�w, potem niepotrzebne
    // --- ponizej kilka przyk�ad�w obs�ugi  opcji -----------
    // przyk�adowa reakcja na wcisni�cie klawisza OK w opcji Otworz :
 /* __________________________ NUSTATYMAI Ijungimo skirtumo temperatura          _______________________ */
@@ -140,10 +157,10 @@ temperatura_2 =  MeniuFunkcija ("Nustatyta=    ", temperatura_2, 99, -25, ">Temp
 if (used.item.getName() == "busena        ") 
  {       
         lcd.setCursor(0,0);lcd.write(7);     
-        lcd.setCursor(1,1);lcd.print("Busena-"); 
-        if (T_busena == 1) lcd.print("sildymas");
-        if (T_busena == 2) lcd.print("saldymas");
-        if (T_busena == 3) lcd.print("isjungta");
+        lcd.setCursor(1,1);lcd.print(F("Busena-")); 
+        if (T_busena == 1) lcd.print(F("sildymas"));
+        if (T_busena == 2) lcd.print(F("saldymas"));
+        if (T_busena == 3) lcd.print(F("isjungta"));
 //      lcd.print(Busena(T_busena,termostato_busenos_pavadinimas));
         int  veiksmas=-1; delay(1000);         // 
                                            
@@ -186,7 +203,7 @@ void menuChangeEvent(MenuChangeEvent changed)  // funkcja klasy MenuBackend
   if(changed.to.getName()==menu.getRoot())
   {
     InMenu =false;
-//    Serial.println("Dabar esame MenuRoot");
+    Serial.println(F("Dabar esame MenuRoot"));
     LCD_T_sablonas();
     Temperaturu_vaizdavimas();
   }
@@ -249,24 +266,52 @@ volatile int Klaviaturos_skaitymas(int analog)
    if (stan_Analog < 800)  return 4;  // OK 
    return -1;                         // Nepaspaustas
 }
+
+
 // ============================================================================================
 // 
 void setup()
 {
- LoadConfig(); 
+#ifdef DEBUGds18b20                        
+  Serial.begin(9600);   
+    Serial.println(F("\n[memCheck]"));
+		Serial.println(freeRam());
+#endif
 
+  lcd.begin(16, 2);    
+  lcd.clear();
+    lcd.setCursor(0,0); 
+    lcd.print("www.SauleVire.lt");
+    lcd.setCursor(0,1); 
+    lcd.print(" v1.2 ethernet"); delay(1999);
+ 
+
+  /* ********************************************************* */
+ LoadConfig(); 
+  /* ********************************************************* */
+  if (ether.begin(sizeof Ethernet::buffer, mymac,enc28j60_CS) == 0) {
+    Serial.println(F("Failed to access Ethernet controller"));
+    ethernet_error = 1; }
+#if STATIC
+  ether.staticSetup(myip, gwip, dnsip);
+#else
+  if (!ether.dhcpSetup())
+    Serial.println(F("DHCP failed"));
+#endif
+  ether.printIp(F("IP:"), ether.myip);
+  ether.printIp(F("GW:"), ether.gwip);  
+  ether.printIp(F("DNS:"), ether.dnsip);  
+
+  if (!ether.dnsLookup(website))
+    Serial.println(F("DNS failed"));
+    
+  ether.printIp(F("SRV:"), ether.hisip);
   /* ********************************************************* */
 
   pinMode(BackLight_Pin, OUTPUT);
     digitalWrite(BackLight_Pin,HIGH);
   eilute1=new char[20]; 
   eilute2=new char[20];
-                        
-  Serial.begin(9600);   
-  lcd.begin(16, 2);    
-  lcd.clear();
-
-
 
   lcd.createChar(3,arrowLeft);    // LCD �enklas kair�n
   lcd.createChar(4,arrowRight);
@@ -274,32 +319,32 @@ void setup()
   lcd.createChar(6,arrowBack);
   lcd.createChar(7,arrowUpDown);
   lcd.createChar(1,arrowUp);
-    lcd.setCursor(0,0); 
-    lcd.print("www.SauleVire.lt");
-    lcd.setCursor(0,1); 
-    lcd.print("      v1.2"); delay(2999);
  lcd.clear();
-//   K_sensor.begin();B_sensor.begin(); T_sensor.begin();
+  // K_sensor.begin();B_sensor.begin(); T_sensor.begin();
    
   pinMode(13,OUTPUT);digitalWrite(13,LOW); // tik testas 
   pinMode(Rele_K,OUTPUT);pinMode(Rele_T,OUTPUT);
   digitalWrite(Rele_K,HIGH);digitalWrite(Rele_T,HIGH);
   menuSetup(); 
 //  menu.moveUp();      
-//  Temperaturu_matavimas_1();
+
+
+  dallas(ONE_WIRE_BUS1);
+  dallas(ONE_WIRE_BUS2);
+  dallas(ONE_WIRE_BUS3);
 
  
   LCD_T_sablonas();
   Temperaturu_vaizdavimas();
     Ekrano_pasvietimo_ijungimo_laikas = millis();
     temperaturu_matavimo_laikas_1 = millis();
-  // Start KSduino at the beginning of setup
-  ksd.begin(mac,  ip, dns, gateway, port);
+
 
   }  // setup() ...************ PABAIGA **************...
   // ************************ PROGRAMOS PRADZIA void loop() *******************************
 void loop()    
 {
+//dhcp_dns();
   // jei ekranas, nespaudant mygtuk�, �vie�ia ilgiau negu u�duota, pa�vietimas i�jungiamas
       if (millis()- Ekrano_pasvietimo_ijungimo_laikas > Ekrano_pasvietimo_pertrauka) { 
       analogWrite(BackLight_Pin, 0);
@@ -336,25 +381,19 @@ if (InMenu == false){
   Ekrano_rodmenu_atnaujinimo_laikas = millis() + Ekrano_rodmenu_atnaujinimo_pertrauka;
   LCD_T_sablonas();
   Temperaturu_vaizdavimas();
-
-  //#ifdef DEBUGds18b20
-//Serial.println("Temperaturu_matavimas");
-//unsigned long start = millis();
-//#endif
   
 #ifdef DEBUGds18b20
 //unsigned long stop = millis();
 //Serial.print("Temperaturu matavimo laikas: ");  Serial.println(stop - start);
-Serial.print("K/ ");Serial.print(K);Serial.print(" B/ ");Serial.print(B);Serial.print(" T/ ");Serial.println(T);
-Serial.println("----");
-Serial.print("T_busena- ");Serial.println(T_busena);
-Serial.print("temperatura_1- ");Serial.print(temperatura_1);
-Serial.print("  temperatura_2- ");Serial.println(temperatura_2);
-Serial.println("----");
-Serial.print("k_ijungimo_skirtumas- ");Serial.print(k_ijungimo_skirtumas);
-Serial.print("  k_isjungimo_skirtumas- ");Serial.println(k_isjungimo_skirtumas);
+Serial.print(F("K/ "));Serial.print(K);Serial.print(F(" B-"));Serial.print(B);Serial.print(F(" T-"));Serial.println(T);
+Serial.print(F("T_busena- "));Serial.println(T_busena);
+Serial.print(F("temperatura_1- "));Serial.println(temperatura_1);
+Serial.print(F("temperatura_2- "));Serial.println(temperatura_2);
 
-Serial.print("millis- ");Serial.println(millis()/1000);
+Serial.print(F("k_ijungimo_skirtumas- "));Serial.print(k_ijungimo_skirtumas);
+Serial.print(F("  k_isjungimo_skirtumas- "));Serial.println(k_isjungimo_skirtumas);
+
+Serial.print(F("millis- "));Serial.println(millis()/1000);
 #endif
   }
 } 
@@ -364,7 +403,45 @@ Serial.print("millis- ");Serial.println(millis()/1000);
 /* +++++++++++++++++++++++++++ PIRMAS LYGIS ++++++++++++++++++++++++++++++++++++ */ 
 if (millis() > temperaturu_matavimo_laikas_1 ) { 
   temperaturu_matavimo_laikas_1 = millis() + temperaturu_matavimo_pertrauka_1;
-  Temperaturu_matavimas_1();
+K=    dallas(ONE_WIRE_BUS1);
+B=    dallas(ONE_WIRE_BUS2);
+T=    dallas(ONE_WIRE_BUS3);
+#ifdef DEBUGds18b20
+//Serial.print("K= ");Serial.println(K);
+//Serial.print("B= ");Serial.println(B);
+//Serial.print("T= ");Serial.println(T);
+  Serial.println(F("\n[memCheck]"));
+		Serial.println(freeRam());
+
+#endif
+
+}
+     
+
+ether.packetLoop(ether.packetReceive());
+  if ((millis()-Ethernet_timer)>15000) {
+//    dhcp_dns();
+    Ethernet_timer = millis();
+    
+  str.reset();
+//  str.print(basedir); 
+  str.print(F("/stebesena/input/post?")); str.print(F("apikey=zemaicio-kolektorius_a91373db012b"));
+ // str.print(apikey);
+  str.print(F("&json={Z-boileris:"));  str.print(B);
+  str.print(F(",Z-kolektorius:"));  str.print(K);
+  str.print(F(",Z-termostatas:"));  str.print(T);
+  str.print(F("}\0"));
+  Serial.println(F("Request sent"));
+  ether.browseUrl(PSTR(""),str.buf, website, my_result_cb);
+
+/*
+Stash::prepare(PSTR("GET /stebesena/input/post?apikey=zemaicio-kolektorius_a91373db012b&json={Z-boileris:$H,Z-kolektorius:$H,Z-termostatas:$H} HTTP/1.0" "\r\n"
+    "Host: $F" "\r\n" "\r\n"),
+    25.5,55.6,88,57,
+    website, my_result_cb);
+ ether.tcpSend();
+ */
+
 }
 //------------------ kolektoriaus siurblio ir termostato valdymas-----------------------//
 if (millis() > Reliu_junginejimo_laikas ) 
@@ -388,116 +465,4 @@ if (millis() > Reliu_junginejimo_laikas )
       digitalWrite(Rele_T,HIGH);
      }
  }
- 
- 
-  static byte d_value = LOW;
-  char buffer[32];
-
-  // Set value to D1 variable  
-  if (d_value == LOW) d_value = HIGH; else  d_value = LOW;      
-  
-  // Create text buffer with parameter d1
-  sprintf (buffer, "d1=%d", d_value);
-  
-  // Send buffer with parameters & values to KSduino server
-  ksd.sendBuffer (buffer);  
-  
-  // Do delay
-  delay (1000);
-  
-  // KSduino update should be at the end of loop
-  ksd.update ();  
-/* //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  byte i;
-  byte present = 0;
-  byte type_s;
-  byte data[12];
-  byte addr[8];
-  float celsius;
-  
-  if ( !K_t.search(addr)) {
-    Serial.println("No more addresses.");
-    Serial.println();
-    K_t.reset_search();
-    delay(250);
-    return;
-  }
-  
-  Serial.print("ROM =");
-  for( i = 0; i < 8; i++) {
-    Serial.write(' ');
-    Serial.print(addr[i], HEX);
-  }
-
-  if (OneWire::crc8(addr, 7) != addr[7]) {
-      Serial.println("CRC is not valid!");
-      return;
-  }
-  Serial.println();
- 
-  // the first ROM byte indicates which chip
-  switch (addr[0]) {
-//    case 0x10:
-//      Serial.println("  Chip = DS18S20");  // or old DS1820
-//      type_s = 1;
-//      break;
-    case 0x28:
-//      Serial.println("  Chip = DS18B20");
-      type_s = 0;
-      break;
-//    case 0x22:
-//      Serial.println("  Chip = DS1822");
-//      type_s = 0;
-//      break;
-    default:
-//      Serial.println("Device is not a DS18x20 family device.");
-      return;
-  } 
-
-  K_t.reset();
-  K_t.select(addr);
-  K_t.write(0x44,1);         // start conversion, with parasite power on at the end
-  
-  delay(1000);     // maybe 750ms is enough, maybe not
-  // we might do a ds.depower() here, but the reset will take care of it.
-  
-  present = K_t.reset();
-  K_t.select(addr);    
-  K_t.write(0xBE);         // Read Scratchpad
-
-//  Serial.print("  Data = ");
-//  Serial.print(present,HEX);
-//  Serial.print(" ");
-  for ( i = 0; i < 9; i++) {           // we need 9 bytes
-    data[i] = K_t.read();
-//    Serial.print(data[i], HEX);
-//    Serial.print(" ");
-  }
-//  Serial.print(" CRC=");
-//  Serial.print(OneWire::crc8(data, 8), HEX);
-//  Serial.println();
-
-  // convert the data to actual temperature
-
-  unsigned int raw = (data[1] << 8) | data[0];
-  if (type_s) {
-    raw = raw << 3; // 9 bit resolution default
-    if (data[7] == 0x10) {
-      // count remain gives full 12 bit resolution
-      raw = (raw & 0xFFF0) + 12 - data[6];
-    }
-  } else {
-    byte cfg = (data[4] & 0x60);
-    if (cfg == 0x00) raw = raw << 3;  // 9 bit resolution, 93.75 ms
-    else if (cfg == 0x20) raw = raw << 2; // 10 bit res, 187.5 ms
-    else if (cfg == 0x40) raw = raw << 1; // 11 bit res, 375 ms
-    // default is 12 bit resolution, 750 ms conversion time
-  }
-  celsius = (float)raw / 16.0;
-//  fahrenheit = celsius * 1.8 + 32.0;
-//  Serial.print("  Temperature = ");
-//  Serial.print(celsius);
-//  Serial.print(" Celsius, ");
-
- //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 }// === PABAIGA ===========================================================

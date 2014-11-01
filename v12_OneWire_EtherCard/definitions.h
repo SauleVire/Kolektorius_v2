@@ -2,7 +2,7 @@
 // #define DEBUG 
 // #define SetWaitForConversionFALSE // pagreitintas ds18b20 temperatūrų matavimas
 
-//#define DEBUGds18b20 // temperatūrų matavimo testavimui 
+#define DEBUGds18b20 // temperatūrų matavimo testavimui 
 // #define DEBUGbusena
 
 /* ********************** Laikai *************************************** */
@@ -39,19 +39,34 @@ byte arrow_down[8]={ B00100,B00100,B00100,B00100,B00100,B11111,B01110,B00100};
 #define Rele_K A1 // Kolektorius
 #define Rele_T A2 // Termostatas
 /* ************************** davikliai *********************** */
-#define ONE_WIRE_BUS1 2 // Kolektorius
-#define ONE_WIRE_BUS2 9 // Boileris
-#define ONE_WIRE_BUS3 A3 // Termostatas
+//#define ONE_WIRE_BUS1 2 // Kolektorius
+//#define ONE_WIRE_BUS2 9 // Boileris
+//#define ONE_WIRE_BUS3 A3 // Termostatas
+//ROM = 28 22 8 CC 4 0 0 4D
+//ROM = 28 4E 47 CC 4 0 0 75
+//ROM = 28 F5 EE CB 4 0 0 CC
+byte sensorK[8] = {0x28, 0x22, 0x08, 0xCC, 0x04, 0x00, 0x00, 0x4D};
+byte sensorB[8] = {0x28, 0x4e, 0x47, 0xcc, 0x04, 0x00, 0x00, 0x75};
+byte sensorT[8] = {0x28, 0xf5, 0xee, 0xcb, 0x04, 0x00, 0x00, 0xcc};
 
+boolean Conv_start1 = false;
+boolean Conv_start2 = false;
+boolean Conv_start3 = false;
+byte Busy1 = 0;
+byte data1[2];
+byte Busy2 = 0;
+byte data2[2];
+byte Busy3 = 0;
+byte data3[2];
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
-OneWire K_t(ONE_WIRE_BUS1); //katilo isejimas
-OneWire B_t(ONE_WIRE_BUS2); //saules kolektorius
-OneWire T_t(ONE_WIRE_BUS3); //pamaisymo voztuvas
+//OneWire K_t(ONE_WIRE_BUS1); //katilo isejimas
+//OneWire B_t(ONE_WIRE_BUS2); //saules kolektorius
+//OneWire T_t(ONE_WIRE_BUS3); //pamaisymo voztuvas
 
 // Pass our oneWire reference to Dallas Temperature. 
-DallasTemperature K_sensor(&K_t);
-DallasTemperature B_sensor(&B_t);
-DallasTemperature T_sensor(&T_t);
+//DallasTemperature K_sensor(&K_t);
+//DallasTemperature B_sensor(&B_t);
+//DallasTemperature T_sensor(&T_t);
 
 //kintamieji saugoti ismatuotoms temperaturu reiksmems
 float K,B,T; 

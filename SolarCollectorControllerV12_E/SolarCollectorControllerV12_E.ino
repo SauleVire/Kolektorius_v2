@@ -1,4 +1,4 @@
-// ============= Solar Controller v1.2 ===============================================
+// ============= Solar Controller v1.2 ethernet ===============================================
 /*
 You are free:
 to Share — to copy, distribute and transmit the work
@@ -17,8 +17,17 @@ Storing values
 Thermostat with cooling or heating function
 LCD 16x2
 5 keys on the keyboard
-The ability to connect a network controller ENC28J60
+network controller ENC28J60 module
+*************Here is a real example of acting.****************** 
+Write API Key 89972c260bdd5663fab6f82bb934fb7e
+Read API Key 226ce7742ae343652f76feb819ad50c8
+URL sending data:
+http://saulevire.lt/stebesena/input/post.json?json={Boiler:99,Collector:88,Termostat:77}&apikey=89972c260bdd5663fab6f82bb934fb7e
+Results:
+http://saulevire.lt/stebesena/dashboard/view?id=7&apikey=226ce7742ae343652f76feb819ad50c8
 
+Binary Project size: 27500 bytes (of the 30,720 max)
+Free Ram 500 bytes (max 2048)
 */
 #include <Wire.h>
  #include "MenuBackend.h"  
@@ -28,9 +37,78 @@ The ability to connect a network controller ENC28J60
  #include <OneWire.h>
 #include <DallasTemperature.h>
  #include <EEPROM.h>
-#include "definitions.h"
+//#include "definitions.h"
 #include <EtherCard.h>
+/* ************************************************************************************** */
+/* ************************************************************************************** */
 
+
+#define DEBUGds18b20 // for temperature measurement testing 
+
+/* ********************** Laikai *************************************** */
+unsigned long Menu_time_spent_inactive; //Meniu_praleistas_neaktyvus_laikas
+#define inactive_menu 20000
+unsigned long temperature_measurement_time_1 = 0;
+unsigned long Relay_switching_time = 0;
+unsigned long temperature_measurement_time_3 = 0;
+#define Temperature_measurement_interval_1 5000
+#define Relay_switching_interval 5000
+#
+
+unsigned long LCD_switching_on_Time;
+unsigned long  The_LCD_light_Break = 600000;
+unsigned long LCD_Update_Time = 0;
+#define LCD_Update_Interval 5000
+
+
+/* ************** Keyboard variables ************************************* */
+#define Key_Pin 0
+volatile int Keyboard_change =-1;  // Check or change the keyboard value
+volatile int x=-1;                 // 
+volatile int stan_Analog;          // 
+/* ********** LCD description ******************* */
+#define BackLight_Pin 8 //LCD backlight pin (standart LCD KeeyPad use pin 10)
+byte lcd_backlight = 10; // lcd_backlight * 25 = MAX LCD backlight
+boolean Backlighting = true; // mark on the screen backlight
+// The pump on indicator (arrow up)
+byte arrow_up[8]={ B00100,B01110,B11111,B00100,B00100,B00100,B00100,B00100};
+// Pump shut-off symbol (arrow in the bottom)
+byte arrow_down[8]={ B00100,B00100,B00100,B00100,B00100,B11111,B01110,B00100};
+
+/* ******************** Relay *********************************** */
+#define Relay_Collector A1 // Collector
+#define Relay_Thermostat A2 // Thermostas
+/* ************************** davikliai *********************** */
+#define ONE_WIRE_BUS1 2 // Collector
+#define ONE_WIRE_BUS2 9 // Boiler
+#define ONE_WIRE_BUS3 A3 // Thermostat
+
+// Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
+boolean Conv_start1 = false;
+boolean Conv_start2 = false;
+boolean Conv_start3 = false;
+byte Busy1 = 0;
+byte data1[2];
+byte Busy2 = 0;
+byte data2[2];
+byte Busy3 = 0;
+byte data3[2];
+
+// variables to store the measured temperature values
+float K,B,T; 
+
+byte Pump_power_on_difference = 5;
+byte Pump_power_off_difference = 3;
+boolean k_uzsalimas = false;
+boolean S_C_pump_manual_control = false; // Mark  manual pump control 
+/* ********** Thermostat variables ******************* */
+byte temperature_1 = 20;
+byte temperature_2 = 25;
+byte Thermostat_status =1;
+
+/* ************************************************************************************** */
+
+/* ************************************************************************************** */
 #define STATIC 1  // set to 1 to disable DHCP (adjust myip/gwip values below)
 
 #if STATIC
@@ -45,13 +123,14 @@ static byte dnsip[] = { 192,168,1,254 };
 // ethernet mac address - must be unique on your network
 static byte mymac[] = { 0x74,0x69,0x69,0x2D,0x30,0x31 };
 
-byte Ethernet::buffer[300]; // tcp/ip send and receive buffer
+byte Ethernet::buffer[250]; // tcp/ip send and receive buffer
 unsigned long Ethernet_timer;
 
-char website[] PROGMEM = "emoncms.org";
+char website[] PROGMEM = "saulevire.lt";
 
 // This is the char array that holds the reply data
-char line_buf[50];
+char line_buf[33];
+
   // --- define their own characters for the LCD arrows: down, left, right, top and power 
 uint8_t arrowUpDown[8] = {0x4,0xe,0x15,0x4,0x15,0xe,0x4};
 uint8_t arrowDown[8]  = {0x4,0x4,0x4,04,0x15,0xe,0x4};
@@ -111,7 +190,7 @@ void menuSetup()                       // feature class MenuBackend
 void menuUseEvent(MenuUseEvent used)      // feature class MenuBackend - after pressing OK
                                           // Here is the menu we offer for shares of handling the OK button
 {
-   Serial.print("pasirinkta:  "); Serial.println(used.item.getName()); // test and then unnecessary
+   Serial.print(F("pasirinkta:  ")); Serial.println(used.item.getName()); // test and then unnecessary
 // --- Below are some of service options ----------- 
 /* __________________________ SETTINGS    _______________________ */
 //  ON - the difference between the temperature       
@@ -128,10 +207,10 @@ Pump_power_off_difference =  MeniuFunkcija ("Nustatyta=    ", Pump_power_off_dif
      if (used.item.getName() == "Irasyti nustat")   // exactly the same string "Irasyti nustat"
       {
                  SaveConfig();
-                 lcd.setCursor(0,0);lcd.print(">Irasyta OK        ");delay(2000); // show OK for 2 sec
-                 lcd.setCursor(0,0);lcd.print("                    "); // clear line
-                 lcd.setCursor(0,0);lcd.print("*");lcd.print(LCD_string_1);           // reconstruct the previous state at LCD
-                 lcd.setCursor(15,0);lcd.print("*");
+                 lcd.setCursor(0,0);lcd.print(F(">Irasyta OK        "));delay(2000); // show OK for 2 sec
+                 lcd.setCursor(0,0);lcd.print(F("                    ")); // clear line
+                 lcd.setCursor(0,0);lcd.print(F("*"));lcd.print(LCD_string_1);           // reconstruct the previous state at LCD
+                 lcd.setCursor(15,0);lcd.print(F("*"));
                 menu.moveDown();
 
       }
@@ -147,10 +226,10 @@ temperature_2 =  MeniuFunkcija ("Nustatyta=    ", temperature_2, 99, -25, ">Temp
 if (used.item.getName() == "busena        ") 
  {       
         lcd.setCursor(0,0);lcd.write(7);     
-        lcd.setCursor(1,1);lcd.print("Busena-"); 
-        if (Thermostat_status == 1) lcd.print("sildymas"); // heating
-        if (Thermostat_status == 2) lcd.print("saldymas"); // freezing
-        if (Thermostat_status == 3) lcd.print("isjungta"); // turned off
+        lcd.setCursor(1,1);lcd.print(F("Busena-")); 
+        if (Thermostat_status == 1) lcd.print(F("sildymas")); // heating
+        if (Thermostat_status == 2) lcd.print(F("saldymas")); // freezing
+        if (Thermostat_status == 3) lcd.print(F("isjungta")); // turned off
 //      lcd.print(Busena(Thermostat_status,termostato_status_name));
         int  action=-1; delay(1000);         // 
                                            
@@ -164,21 +243,21 @@ if (used.item.getName() == "busena        ")
              if (action==1) {Thermostat_status++; if(Thermostat_status>3) Thermostat_status=1; 
                                                  lcd.setCursor(8,1); 
                                                //  lcd.print(Busena(Thermostat_status,termostato_status_name));
-                                                 if (Thermostat_status == 1) lcd.print("sildymas"); // heating
-                                                 if (Thermostat_status == 2) lcd.print("saldymas"); // freezing
-                                                 if (Thermostat_status == 3) lcd.print("isjungta"); // turned off
+                                                 if (Thermostat_status == 1) lcd.print(F("sildymas")); // heating
+                                                 if (Thermostat_status == 2) lcd.print(F("saldymas")); // freezing
+                                                 if (Thermostat_status == 3) lcd.print(F("isjungta")); // turned off
                                             delay(200);}
              if(action==2)  {Thermostat_status--; if(Thermostat_status<1) Thermostat_status=3; 
                                                  lcd.setCursor(8,1); 
                                               //   lcd.print(Busena(Thermostat_status,termostato_status_name));
-                                                 if (Thermostat_status == 1) lcd.print("sildymas"); // heating
-                                                 if (Thermostat_status == 2) lcd.print("saldymas"); // freezing
-                                                 if (Thermostat_status == 3) lcd.print("isjungta"); // turned off 
+                                                 if (Thermostat_status == 1) lcd.print(F("sildymas")); // heating
+                                                 if (Thermostat_status == 2) lcd.print(F("saldymas")); // freezing
+                                                 if (Thermostat_status == 3) lcd.print(F("isjungta")); // turned off 
                                                delay(200);}
              if(action==4) // 0
                {
-                 lcd.setCursor(0,0); lcd.print("Busena        OK"); delay(2000); // 0
-                 lcd.setCursor(0,0); lcd.print("                "); // 0
+                 lcd.setCursor(0,0); lcd.print(F("Busena        OK")); delay(2000); // 0
+                 lcd.setCursor(0,0); lcd.print(F("                ")); // 0
                  lcd.setCursor(1,0);lcd.print(LCD_string_1);           // 0
                  menu.moveDown();
                }
@@ -193,8 +272,8 @@ void menuChangeEvent(MenuChangeEvent changed)  // funkcja klasy MenuBackend
   if(changed.to.getName()==menu.getRoot())
   {
     InMenu =false;
-    Serial.println("Dabar esame MenuRoot");
-    LCD_T_sablonas();
+    Serial.println(F("Dabar esame MenuRoot"));
+    LCD_T_Template();
     temperature_Imaging();
   }
   /* it really is only useful here in shortkey and is used primarily to enrich the 
@@ -261,82 +340,74 @@ volatile int Read_keyboard(int analog)
 // 
 void setup()
 {
-    Serial.begin(9600); 
+//#ifdef DEBUGds18b20                        
+  Serial.begin(9600);   
+//#endif
   /* ********************************************************* */
  LoadConfig(); 
   /* ********************************************************* */
   if (ether.begin(sizeof Ethernet::buffer, mymac,10) == 0) 
-    Serial.println( "Failed to access Ethernet controller");
+    Serial.println(F("Failed to access Ethernet controller"));
 #if STATIC
   ether.staticSetup(myip, gwip, dnsip);
 #else
   if (!ether.dhcpSetup())
-    Serial.println("DHCP failed");
+    Serial.println(F("DHCP failed"));
 #endif
-  ether.printIp("IP:  ", ether.myip);
-  ether.printIp("GW:  ", ether.gwip);  
-  ether.printIp("DNS: ", ether.dnsip);  
+  ether.printIp(F("IP:"), ether.myip);
+  ether.printIp(F("GW:"), ether.gwip);  
+  ether.printIp(F("DNS:"), ether.dnsip);  
 
   if (!ether.dnsLookup(website))
-    Serial.println("DNS failed");
+    Serial.println(F("DNS failed"));
     
   ether.printIp("SRV: ", ether.hisip);
-
   /* ********************************************************* */
 
   pinMode(BackLight_Pin, OUTPUT);
     digitalWrite(BackLight_Pin,HIGH);
   LCD_string_1=new char[20]; 
   LCD_string_2=new char[20];
-                        
-  Serial.begin(9600);   
+
   lcd.begin(16, 2);    
   lcd.clear();
 
 
 
-  lcd.createChar(3,arrowLeft);    // LCD symbol left
+  lcd.createChar(3,arrowLeft);    // LCD symbol "left"
   lcd.createChar(4,arrowRight);
   lcd.createChar(5,arrowDown);
   lcd.createChar(6,arrowBack);
   lcd.createChar(7,arrowUpDown);
   lcd.createChar(1,arrowUp);
     lcd.setCursor(0,0); 
-    lcd.print("www.SauleVire.lt"); // advertisement
+    lcd.print(F("www.SauleVire.lt"));
     lcd.setCursor(0,1); 
-    lcd.print("      v1.2"); delay(2999);
+    lcd.print(F(" v1.2 ethernet")); delay(2999);
  lcd.clear();
-   Collector_sensor.begin();Boiler_sensor.begin();
-   Thermostat_sensor.begin();
+  // K_sensor.begin();B_sensor.begin(); T_sensor.begin();
    
   pinMode(13,OUTPUT);digitalWrite(13,LOW); // only for test
   pinMode(Relay_Collector,OUTPUT);pinMode(Relay_Thermostat,OUTPUT);
   digitalWrite(Relay_Collector,HIGH);digitalWrite(Relay_Thermostat,HIGH);
   menuSetup(); 
 //  menu.moveUp();      
-  Temperaturu_matavimas_1();
+
+
+  dallas(ONE_WIRE_BUS1);
+  dallas(ONE_WIRE_BUS2);
+  dallas(ONE_WIRE_BUS3);
 
  
-  LCD_T_sablonas();
+  LCD_T_Template();
   temperature_Imaging();
     LCD_switching_on_Time = millis();
     temperature_measurement_time_1 = millis();
-
 
   }  // setup() ...************ END **************...
   // ************************ START void loop() *******************************
 void loop()    
 {
-  ether.packetLoop(ether.packetReceive());
-
-  if ((millis()-Ethernet_timer)>5000) {
-    Ethernet_timer = millis();
-    Serial.println("Request sent");
-    // Make our request - here we ask for the emoncms feed value
-    // Emoncms.org account example username: switch, password: switch
-//    ether.browseUrl(PSTR("/feed/value.json?apikey=4defc9b6fef3aec2aecb538638b471c4&id=8656"),"", website, my_callback);
-ether.browseUrl(PSTR("/input/post.json?json={boileris:123,kolektorius:456,x:1}&apikey=5f95184d8faf89cfe4ea1e0fd9aad868"),"", website, my_callback);
-  }
   // if the screen, without application of the button illuminates more than the tasks, backlight off
       if (millis()- LCD_switching_on_Time > The_LCD_light_Break) { 
       analogWrite(BackLight_Pin, 0);
@@ -371,7 +442,7 @@ if (InMenu == false){
   // time interval used for the LCD refresh
   if (millis() > LCD_Update_Time ) { 
   LCD_Update_Time = millis() + LCD_Update_Interval;
-  LCD_T_sablonas();
+  LCD_T_Template();
   temperature_Imaging();
 
   //#ifdef DEBUGds18b20
@@ -382,19 +453,16 @@ if (InMenu == false){
 #ifdef DEBUGds18b20
 //unsigned long stop = millis();
 //Serial.print("Temperature measurement time: ");  Serial.println(stop - start);
-Serial.print("K/ ");Serial.print(K);Serial.print(" B/ ");Serial.print(B);Serial.print(" T/ ");Serial.println(T);
-Serial.println("----");
-Serial.print("Thermostat_status- ");Serial.println(Thermostat_status);
-Serial.print("temperature_1- ");Serial.print(temperature_1);
-Serial.print("  temperature_2- ");Serial.println(temperature_2);
-Serial.println("----");
-Serial.print("Pump_power_on_difference- ");Serial.print(Pump_power_on_difference);
-Serial.print("  Pump_power_off_difference- ");Serial.println(Pump_power_off_difference);
+Serial.print(F("K/"));Serial.print(K);Serial.print(F(" B/"));Serial.print(B);Serial.print(F(" T/"));Serial.println(T);
+Serial.println(F("----"));
+Serial.print(F("Thermostat_status- "));Serial.println(Thermostat_status);
+Serial.print(F("temperature_1- "));Serial.print(temperature_1);
+Serial.print(F("  temperature_2- "));Serial.println(temperature_2);
+Serial.println(F("----"));
+Serial.print(F("Pump_power_on_difference- "));Serial.print(Pump_power_on_difference);
+Serial.print(F("  Pump_power_off_difference- "));Serial.println(Pump_power_off_difference);
 
-Serial.print("millis- ");Serial.println(millis()/1000);
-
-    Serial.println(F("\n\n[memCheck]"));
-    Serial.println(freeRam());
+Serial.print(F("millis- "));Serial.println(millis()/1000);
 #endif
   }
 } 
@@ -404,7 +472,47 @@ Serial.print("millis- ");Serial.println(millis()/1000);
 /* +++++++++++++++++++++++++++ First level ++++++++++++++++++++++++++++++++++++ */ 
 if (millis() > temperature_measurement_time_1 ) { 
   temperature_measurement_time_1 = millis() + Temperature_measurement_interval_1;
-  Temperaturu_matavimas_1();}
+K=    dallas(ONE_WIRE_BUS1);
+B=    dallas(ONE_WIRE_BUS2);
+T=    dallas(ONE_WIRE_BUS3);
+#ifdef DEBUGds18b20
+Serial.print(F("K= "));Serial.println(K);
+Serial.print(F("B= "));Serial.println(B);
+Serial.print(F("T= "));Serial.println(T);
+
+    Serial.println(F("\n[memCheck]"));
+    Serial.println(freeRam());
+#endif
+
+}
+//---------------------------------------------------------------------------------//
+ether.packetLoop(ether.packetReceive());
+  if ((millis()-Ethernet_timer)>60000) {
+    Ethernet_timer = millis();
+    Serial.println(F("Request sent"));
+
+char string_C[5];
+dtostrf(K, 2, 2, string_C);
+char string_B[5];
+dtostrf(B, 2, 2, string_B);
+char string_T[5];
+dtostrf(T, 2, 2, string_T);
+
+Stash stash;
+byte K_t = stash.create();
+stash.print(string_C);
+byte B_t = stash.create();
+stash.print(string_B);
+byte T_t = stash.create();
+stash.print(string_T);
+stash.save();
+
+Stash::prepare(PSTR("GET /stebesena/input/post?apikey=89972c260bdd5663fab6f82bb934fb7e&json={Boiler:$H,Collector:$H,Termostat:$H} HTTP/1.0" "\r\n"
+    "Host: $F" "\r\n" "\r\n"),
+    B_t, K_t, T_t, website, my_callback);
+ ether.tcpSend();
+
+}
 //------------------ collector pump and thermostat control -----------------------//
 if (millis() > Relay_switching_time ) 
  {
@@ -428,30 +536,77 @@ if (millis() > Relay_switching_time )
      }
  }
 }// === END ===========================================================
-void Temperaturu_matavimas_1(){
-  //____________________________ Start Sensor 1 _________________________________
-#ifdef SetWaitForConversionFALSE
-  Collector_sensor.setWaitForConversion(false);  // makes it async
-#endif
-  Collector_sensor.requestTemperatures(); // Send the command to get temperatures
-  K=Collector_sensor.getTempCByIndex(0);
-//_____________________________ Stop Sensor 1 ___________________________________
-  //______________________ Start Sensor 3 ________________________________________
-  #ifdef SetWaitForConversionFALSE
-  Thermostat_sensor.setWaitForConversion(false);  // makes it async
-#endif
-  Thermostat_sensor.requestTemperatures(); // Send the command to get temperatures
-T=Thermostat_sensor.getTempCByIndex(0);
-//___________________ Stop Sensor 3 ______________________________________________
-//__________________________________________ Start Sensor 2 _____________________
-#ifdef SetWaitForConversionFALSE
-  Boiler_sensor.setWaitForConversion(false);  // makes it async
-#endif
-  Boiler_sensor.requestTemperatures(); // Send the command to get temperatures
-  B=Boiler_sensor.getTempCByIndex(0);
-//_____________________________________ Stop Sensor 2 ____________________________
+
+
+
+// Scan settings 
+boolean LoadConfig(){
+  if ((EEPROM.read(0) == 27) && (EEPROM.read(1) == 28) && 
+     (EEPROM.read(2) == 13) && (EEPROM.read(3) == 18)) {
+
+    if (EEPROM.read(4) == EEPROM.read(5)) Pump_power_on_difference = EEPROM.read(4);  
+    if (EEPROM.read(6) == EEPROM.read(7)) Pump_power_off_difference = EEPROM.read(6);
+    if (EEPROM.read(8) == EEPROM.read(9)) temperature_1 = EEPROM.read(8);  
+    if (EEPROM.read(10) == EEPROM.read(11)) temperature_2 = EEPROM.read(10);
+    if (EEPROM.read(12) == EEPROM.read(13)) Thermostat_status = EEPROM.read(12);
+    return true;
+  }
+  return false;
 }
-void LCD_T_sablonas(){
+// Write settings
+void SaveConfig(){
+  EEPROM.write(0,27);
+  EEPROM.write(1,28);
+  EEPROM.write(2,13);
+  EEPROM.write(3,18);
+  EEPROM.write(4,Pump_power_on_difference);EEPROM.write(5,Pump_power_on_difference);  // 
+  EEPROM.write(6,Pump_power_off_difference); EEPROM.write(7,Pump_power_off_difference);  // 
+  EEPROM.write(8,temperature_1);EEPROM.write(9,temperature_1);  // 
+  EEPROM.write(10,temperature_2); EEPROM.write(11,temperature_2);  // 
+  EEPROM.write(12,Thermostat_status); EEPROM.write(13,Thermostat_status);  // 
+
+}
+/*----------------------------------------------------------------------------*/
+int get_reply_data(word off)
+{
+  memset(line_buf,NULL,sizeof(line_buf));
+  if (off != 0)
+  {
+    uint16_t pos = off;
+    int line_num = 0;
+    int line_pos = 0;
+    
+    // Skip over header until data part is found
+    while (Ethernet::buffer[pos]) {
+      if (Ethernet::buffer[pos-1]=='\n' && Ethernet::buffer[pos]=='\r') break;
+      pos++; 
+    }
+    pos+=2;
+    while (Ethernet::buffer[pos])
+    {
+      if (line_pos<49) {line_buf[line_pos] = Ethernet::buffer[pos]; line_pos++;} else break;
+      pos++; 
+    }
+    line_buf[line_pos] = '\0';
+    return line_pos;
+  }
+  return 0;
+}
+
+static void my_callback (byte status, word off, word len) {
+
+  // get_reply_data gets the data part of the reply and puts it in the line_buf char array
+  int lsize =   get_reply_data(off);
+  
+  Serial.print("Feed value: ");
+
+  int value = atoi(line_buf);
+  Serial.println(value);
+  
+  
+}
+/* ********************************************************* */
+void LCD_T_Template(){
   lcd.setCursor(0,0); lcd.print("K"); lcd.setCursor(6,0); lcd.print(" S");
   lcd.setCursor(0,1); lcd.print("B"); lcd.setCursor(6,1); lcd.print(" T");
 }
@@ -461,7 +616,7 @@ lcd.setCursor(1,0); lcd.print(K); if (K-B>0) {lcd.setCursor(8,0); lcd.print(" ")
                                              else {lcd.setCursor(8,0); lcd.print(K-B);}
 lcd.setCursor(1,1); lcd.print(B); lcd.setCursor(8,1); lcd.print(T);//(int(K + 0.5));
 }
-
+/* ********************************************************* */
    int MeniuFunkcija (String text_1, int  Converted_Value, int Max_Value, int Min_Value, String text_2)
 	        {
         lcd.setCursor(0,0);lcd.write(7);     
@@ -495,32 +650,64 @@ lcd.setCursor(1,1); lcd.print(B); lcd.setCursor(8,1); lcd.print(T);//(int(K + 0.
          // This is an important moment - while loop ends and turn the control to the main loop loop ()
          return  Converted_Value;
       }
-// Scan settings 
-boolean LoadConfig(){
-  if ((EEPROM.read(0) == 27) && (EEPROM.read(1) == 28) && 
-     (EEPROM.read(2) == 13) && (EEPROM.read(3) == 18)) {
-
-    if (EEPROM.read(4) == EEPROM.read(5)) Pump_power_on_difference = EEPROM.read(4);  
-    if (EEPROM.read(6) == EEPROM.read(7)) Pump_power_off_difference = EEPROM.read(6);
-    if (EEPROM.read(8) == EEPROM.read(9)) temperature_1 = EEPROM.read(8);  
-    if (EEPROM.read(10) == EEPROM.read(11)) temperature_2 = EEPROM.read(10);
-    if (EEPROM.read(12) == EEPROM.read(13)) Thermostat_status = EEPROM.read(12);
-    return true;
+/* ************************************************************************** */
+float dallas(int x)
+{
+OneWire ds(x);
+  //returns the temperature from one DS18S20 in DEG Celsius
+  byte i;
+  byte data[12];
+  byte addr[8];
+  float result;
+  if ( !ds.search(addr)) 
+  {
+      ds.reset_search();
+      return -99; // no more sensors on chain, reset search
   }
-  return false;
+
+  if ( OneWire::crc8( addr, 7) != addr[7]) 
+  {
+      return -88; //CRC is not valid!
+  }
+
+  if ( addr[0] != 0x28) 
+  {
+     return -77; // Device is not recognized
+  }
+
+  ds.reset();
+  ds.select(addr);
+  ds.write(0x44,1); // start conversion
+//  delay(850); // Wait some time...
+  
+  ds.reset();   // byte present = ds.reset();
+  ds.select(addr);    
+  ds.write(0xBE); // Read Scratchpad command
+
+  for (int i = 0; i < 9; i++)  // Receive 9 bytes
+  { 
+    data[i] = ds.read();
+  }
+  
+ // ds.reset_search();
+  
+  // memory consuming but readable code:
+/*  byte MSB = data[1];
+  byte LSB = data[0];
+
+  float tempRead = ((MSB << 8) | LSB); //using two's compliment
+  float TemperatureSum = tempRead / 16;  // 1/16 = 0.0625
+  return TemperatureSum;
+  
+    
+  return ( (data[1] << 8) + data[0] )*0.0625 ;
+ */
+   unsigned int raw = (data[1] << 8) | data[0];
+       byte cfg = (data[4] & 0x60);
+       return raw / 16.0;
 }
-// Write settings
-void SaveConfig(){
-  EEPROM.write(0,27);
-  EEPROM.write(1,28);
-  EEPROM.write(2,13);
-  EEPROM.write(3,18);
-  EEPROM.write(4,Pump_power_on_difference);EEPROM.write(5,Pump_power_on_difference);  // 
-  EEPROM.write(6,Pump_power_off_difference); EEPROM.write(7,Pump_power_off_difference);  // 
-  EEPROM.write(8,temperature_1);EEPROM.write(9,temperature_1);  // 
-  EEPROM.write(10,temperature_2); EEPROM.write(11,temperature_2);  // 
-  EEPROM.write(12,Thermostat_status); EEPROM.write(13,Thermostat_status);  // 
-
+int freeRam () {
+  extern int __heap_start, *__brkval; 
+  int v; 
+  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
 }
-
-

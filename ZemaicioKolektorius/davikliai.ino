@@ -5,8 +5,8 @@ OneWire ds(x);
   byte data[12];
   byte addr[8];
 //  float result;
- // if ( !ds.search(addr)) 
- // {   ds.reset_search();  return -99;  }// no more sensors on chain, reset search
+ if ( !ds.search(addr)) 
+ {   ds.reset_search();  return -99;  }// no more sensors on chain, reset search
   if ( OneWire::crc8( addr, 7) != addr[7]) 
   {   return -88; }//CRC is not valid!
   if ( addr[0] != 0x28) 
@@ -16,7 +16,7 @@ OneWire ds(x);
   ds.reset();
   ds.select(addr);
   ds.write(0x44,1); // start conversion
-//  delay(850); // Wait some time...
+  delay(750);//(850); // Wait some time...
   
   ds.reset();   // byte present = ds.reset();
   ds.select(addr);    
@@ -30,7 +30,7 @@ OneWire ds(x);
  // ds.reset_search();
   
   // memory consuming but readable code:
-/*  byte MSB = data[1];
+  byte MSB = data[1];
   byte LSB = data[0];
 
   float tempRead = ((MSB << 8) | LSB); //using two's compliment
@@ -39,8 +39,8 @@ OneWire ds(x);
   
     
   return ( (data[1] << 8) + data[0] )*0.0625 ;
- */
-   unsigned int raw = (data[1] << 8) | data[0];
-       byte cfg = (data[4] & 0x60);
-       return raw / 16.0;
+ 
+//   unsigned int raw = (data[1] << 8) | data[0];
+//       byte cfg = (data[4] & 0x60);
+//       return raw / 16.0;
 }
