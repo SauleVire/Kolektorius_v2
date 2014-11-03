@@ -8307,7 +8307,6 @@ PCF8583: Clock/calendar with 240 x 8-bit RAM&lt;/b&gt;
 <part name="R11" library="resistor" deviceset="R-EU_" device="0207/10" value="10k"/>
 <part name="R12" library="resistor" deviceset="R-EU_" device="0207/10" value="10k"/>
 <part name="BAT1" library="SparkFun-Electromechanical" deviceset="BATTERY" device="20PTH"/>
-<part name="JP1" library="SparkFun" deviceset="M02" device="PTH" value="GND5V"/>
 </parts>
 <sheets>
 <sheet>
@@ -8365,7 +8364,7 @@ PCF8583: Clock/calendar with 240 x 8-bit RAM&lt;/b&gt;
 <attribute name="VALUE" x="162.56" y="50.8" size="1.778" layer="96"/>
 <attribute name="NAME" x="162.56" y="69.342" size="1.778" layer="95"/>
 </instance>
-<instance part="JP3" gate="G$1" x="116.84" y="35.56" rot="R180"/>
+<instance part="JP3" gate="G$1" x="116.84" y="40.64" rot="R180"/>
 <instance part="U$2" gate="G$1" x="109.22" y="137.16"/>
 <instance part="JP2" gate="G$1" x="137.16" y="55.88" rot="R180"/>
 <instance part="IC1" gate="G$1" x="45.72" y="53.34"/>
@@ -8373,7 +8372,6 @@ PCF8583: Clock/calendar with 240 x 8-bit RAM&lt;/b&gt;
 <instance part="R11" gate="G$1" x="78.74" y="60.96" rot="R90"/>
 <instance part="R12" gate="G$1" x="73.66" y="66.04" rot="R90"/>
 <instance part="BAT1" gate="G$1" x="45.72" y="33.02" rot="R180"/>
-<instance part="JP1" gate="G$1" x="93.98" y="35.56" rot="R180"/>
 </instances>
 <busses>
 </busses>
@@ -8459,8 +8457,8 @@ PCF8583: Clock/calendar with 240 x 8-bit RAM&lt;/b&gt;
 </segment>
 <segment>
 <pinref part="JP3" gate="G$1" pin="2"/>
-<wire x1="109.22" y1="33.02" x2="104.14" y2="33.02" width="0.1524" layer="91"/>
-<label x="104.14" y="33.02" size="1.778" layer="95"/>
+<wire x1="109.22" y1="38.1" x2="104.14" y2="38.1" width="0.1524" layer="91"/>
+<label x="104.14" y="38.1" size="1.778" layer="95"/>
 </segment>
 <segment>
 <wire x1="134.62" y1="132.08" x2="147.32" y2="132.08" width="0.1524" layer="91"/>
@@ -8479,11 +8477,6 @@ PCF8583: Clock/calendar with 240 x 8-bit RAM&lt;/b&gt;
 <label x="33.02" y="30.48" size="1.778" layer="95"/>
 <pinref part="BAT1" gate="G$1" pin="-"/>
 <junction x="40.64" y="33.02"/>
-</segment>
-<segment>
-<pinref part="JP1" gate="G$1" pin="2"/>
-<wire x1="86.36" y1="33.02" x2="81.28" y2="33.02" width="0.1524" layer="91"/>
-<label x="81.28" y="33.02" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="RESET" class="0">
@@ -8763,11 +8756,6 @@ PCF8583: Clock/calendar with 240 x 8-bit RAM&lt;/b&gt;
 <wire x1="78.74" y1="66.04" x2="78.74" y2="71.12" width="0.1524" layer="91"/>
 <junction x="78.74" y="71.12"/>
 </segment>
-<segment>
-<pinref part="JP1" gate="G$1" pin="1"/>
-<wire x1="86.36" y1="35.56" x2="81.28" y2="35.56" width="0.1524" layer="91"/>
-<label x="81.28" y="35.56" size="1.778" layer="95"/>
-</segment>
 </net>
 <net name="N$1" class="0">
 <segment>
@@ -8885,8 +8873,8 @@ PCF8583: Clock/calendar with 240 x 8-bit RAM&lt;/b&gt;
 </segment>
 <segment>
 <pinref part="JP3" gate="G$1" pin="1"/>
-<wire x1="109.22" y1="35.56" x2="104.14" y2="35.56" width="0.1524" layer="91"/>
-<label x="104.14" y="35.56" size="1.778" layer="95"/>
+<wire x1="109.22" y1="40.64" x2="104.14" y2="40.64" width="0.1524" layer="91"/>
+<label x="104.14" y="40.64" size="1.778" layer="95"/>
 </segment>
 <segment>
 <wire x1="134.62" y1="101.6" x2="147.32" y2="101.6" width="0.1524" layer="91"/>
