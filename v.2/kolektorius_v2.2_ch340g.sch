@@ -19927,6 +19927,11 @@ Grid 2.54 mm&lt;p&gt;
 <wire x1="210.82" y1="113.03" x2="215.9" y2="113.03" width="0.1524" layer="91"/>
 <label x="213.36" y="113.03" size="1.778" layer="95"/>
 </segment>
+<segment>
+<pinref part="X5" gate="-2" pin="1"/>
+<wire x1="313.69" y1="5.08" x2="306.07" y2="5.08" width="0.1524" layer="91"/>
+<label x="306.07" y="5.08" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="A1" class="0">
 <segment>
@@ -19980,13 +19985,6 @@ Grid 2.54 mm&lt;p&gt;
 <segment>
 <wire x1="113.03" y1="17.78" x2="105.41" y2="17.78" width="0.1524" layer="91"/>
 <label x="105.41" y="17.78" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="D1" class="0">
-<segment>
-<pinref part="X5" gate="-2" pin="1"/>
-<wire x1="313.69" y1="5.08" x2="306.07" y2="5.08" width="0.1524" layer="91"/>
-<label x="306.07" y="5.08" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="D8" class="0">
