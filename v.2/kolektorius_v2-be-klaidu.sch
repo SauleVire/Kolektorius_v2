@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="1.27" unitdist="mm" unit="mm" style="lines" multiple="1" display="no" altdistance="1.27" altunitdist="mm" altunit="mm"/>
+<grid distance="1.27" unitdist="mm" unit="mm" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="mm"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
@@ -19289,7 +19289,7 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <attribute name="VALUE" x="166.624" y="178.181" size="1.778" layer="96"/>
 </instance>
 <instance part="GND6" gate="1" x="85.09" y="85.09"/>
-<instance part="GND14" gate="1" x="118.11" y="3.81"/>
+<instance part="GND14" gate="1" x="115.57" y="12.7"/>
 <instance part="+3V9" gate="1" x="109.22" y="87.63"/>
 <instance part="ATTINY" gate="G$1" x="135.89" y="25.4"/>
 <instance part="RUSB" gate="G$1" x="109.22" y="77.47" smashed="yes" rot="R90">
@@ -19618,9 +19618,10 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <pinref part="ATTINY" gate="G$1" pin="GND"/>
 <pinref part="GND14" gate="1" pin="GND"/>
 <pinref part="C15" gate="G$1" pin="2"/>
-<wire x1="118.11" y1="6.35" x2="118.11" y2="21.59" width="0.1524" layer="91"/>
-<wire x1="118.11" y1="21.59" x2="120.65" y2="20.32" width="0.1524" layer="91"/>
-<wire x1="115.57" y1="21.59" x2="118.11" y2="21.59" width="0.1524" layer="91"/>
+<wire x1="115.57" y1="15.24" x2="115.57" y2="20.32" width="0.1524" layer="91"/>
+<wire x1="115.57" y1="20.32" x2="120.65" y2="20.32" width="0.1524" layer="91"/>
+<wire x1="115.57" y1="21.59" x2="115.57" y2="20.32" width="0.1524" layer="91"/>
+<junction x="115.57" y="20.32"/>
 </segment>
 <segment>
 <wire x1="81.28" y1="147.32" x2="81.28" y2="139.7" width="0.1524" layer="91"/>
@@ -19859,8 +19860,8 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 </net>
 <net name="VIN" class="0">
 <segment>
-<wire x1="114.3" y1="67.31" x2="85.09" y2="67.31" width="0.1524" layer="91"/>
-<label x="86.36" y="67.31" size="1.778" layer="95"/>
+<wire x1="114.3" y1="67.31" x2="104.14" y2="67.31" width="0.1524" layer="91"/>
+<label x="104.14" y="64.77" size="1.778" layer="95"/>
 <pinref part="USB" gate="G$1" pin="VBUS"/>
 </segment>
 <segment>
@@ -20023,6 +20024,7 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <pinref part="D5" gate="G$1" pin="C"/>
 <wire x1="97.79" y1="69.85" x2="85.09" y2="69.85" width="0.1524" layer="91"/>
 <wire x1="97.79" y1="66.04" x2="97.79" y2="69.85" width="0.1524" layer="91"/>
+<junction x="97.79" y="69.85"/>
 </segment>
 </net>
 <net name="D-" class="0">
@@ -20038,6 +20040,7 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <pinref part="D4" gate="G$1" pin="C"/>
 <wire x1="92.71" y1="72.39" x2="85.09" y2="72.39" width="0.1524" layer="91"/>
 <wire x1="92.71" y1="66.04" x2="92.71" y2="72.39" width="0.1524" layer="91"/>
+<junction x="92.71" y="72.39"/>
 </segment>
 </net>
 <net name="N$38" class="0">
@@ -20827,6 +20830,7 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <pinref part="C15" gate="G$1" pin="1"/>
 <wire x1="115.57" y1="33.02" x2="120.65" y2="33.02" width="0.1524" layer="91"/>
 <wire x1="115.57" y1="29.21" x2="115.57" y2="33.02" width="0.1524" layer="91"/>
+<junction x="115.57" y="33.02"/>
 </segment>
 <segment>
 <wire x1="271.78" y1="180.34" x2="262.89" y2="180.34" width="0.1524" layer="91"/>
