@@ -18965,6 +18965,68 @@ Grid 2.54 mm&lt;p&gt;
 </deviceset>
 </devicesets>
 </library>
+<library name="buzzer">
+<description>&lt;b&gt;Speakers and Buzzers&lt;/b&gt;&lt;p&gt;
+&lt;ul&gt;Distributors:
+&lt;li&gt;Buerklin
+&lt;li&gt;Spoerle
+&lt;li&gt;Schukat
+&lt;/ul&gt;
+&lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;</description>
+<packages>
+<package name="F/HMB">
+<description>&lt;b&gt;BUZZER&lt;/b&gt;</description>
+<wire x1="3.175" y1="3.175" x2="4.445" y2="3.175" width="0.254" layer="21"/>
+<wire x1="3.81" y1="2.54" x2="3.81" y2="3.81" width="0.254" layer="21"/>
+<circle x="0" y="0" radius="7.0104" width="0.1524" layer="21"/>
+<circle x="0" y="0" radius="8.001" width="0.1524" layer="21"/>
+<circle x="0" y="0" radius="1.27" width="0.1524" layer="21"/>
+<circle x="3.81" y="3.175" radius="1.27" width="0.1524" layer="21"/>
+<pad name="-" x="-3.81" y="0" drill="1.016" diameter="2.54" shape="octagon"/>
+<pad name="+" x="3.81" y="0" drill="1.016" diameter="2.54" shape="octagon"/>
+<text x="4.445" y="6.985" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-4.445" y="-3.81" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
+</package>
+</packages>
+<symbols>
+<symbol name="B">
+<wire x1="-2.54" y1="5.08" x2="5.08" y2="5.08" width="0.254" layer="94" curve="180"/>
+<wire x1="-2.54" y1="5.08" x2="1.27" y2="5.08" width="0.254" layer="94"/>
+<wire x1="1.27" y1="1.27" x2="1.27" y2="5.08" width="0.1524" layer="94"/>
+<wire x1="1.27" y1="5.08" x2="5.08" y2="5.08" width="0.254" layer="94"/>
+<wire x1="2.54" y1="-2.54" x2="2.54" y2="1.397" width="0.1524" layer="94"/>
+<wire x1="0" y1="-2.54" x2="0" y2="1.397" width="0.1524" layer="94"/>
+<text x="-2.54" y="6.35" size="1.778" layer="95">&gt;NAME</text>
+<text x="5.08" y="0" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="-" x="5.08" y="-2.54" visible="pad" length="short" direction="pas" rot="R180"/>
+<pin name="+" x="-2.54" y="-2.54" visible="pad" length="short" direction="pas"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="F/HMB" prefix="SG">
+<description>&lt;b&gt;BUZZER&lt;/b&gt;&lt;p&gt; Source: Buerklin</description>
+<gates>
+<gate name="G$1" symbol="B" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="F/HMB">
+<connects>
+<connect gate="G$1" pin="+" pad="+"/>
+<connect gate="G$1" pin="-" pad="-"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="MF" value="" constant="no"/>
+<attribute name="MPN" value="" constant="no"/>
+<attribute name="OC_FARNELL" value="unknown" constant="no"/>
+<attribute name="OC_NEWARK" value="unknown" constant="no"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -19114,6 +19176,10 @@ Grid 2.54 mm&lt;p&gt;
 <part name="SJ1" library="rcl" deviceset="R-EU_" device="R0402" value="0R"/>
 <part name="SJ2" library="rcl" deviceset="R-EU_" device="R0402" value="0R"/>
 <part name="SJ3" library="rcl" deviceset="R-EU_" device="R0402" value="0R"/>
+<part name="SG1" library="buzzer" deviceset="F/HMB" device=""/>
+<part name="T2" library="adafruit" deviceset="2N2222" device=""/>
+<part name="R19" library="rcl" deviceset="R-EU_" device="R0805" value="1k"/>
+<part name="+3V9" library="supply1" deviceset="+5V" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -19434,6 +19500,16 @@ Grid 2.54 mm&lt;p&gt;
 <instance part="SJ1" gate="G$1" x="306.07" y="90.17"/>
 <instance part="SJ2" gate="G$1" x="304.8" y="73.66"/>
 <instance part="SJ3" gate="G$1" x="304.8" y="57.15"/>
+<instance part="SG1" gate="G$1" x="121.92" y="50.8" rot="R270"/>
+<instance part="T2" gate="G$1" x="116.84" y="38.1" smashed="yes">
+<attribute name="NAME" x="119.38" y="39.37" size="1.778" layer="95"/>
+<attribute name="VALUE" x="119.38" y="36.83" size="1.778" layer="96"/>
+</instance>
+<instance part="R19" gate="G$1" x="105.41" y="38.1" smashed="yes" rot="R180">
+<attribute name="NAME" x="103.8606" y="39.116" size="1.778" layer="95"/>
+<attribute name="VALUE" x="104.14" y="35.306" size="1.778" layer="96"/>
+</instance>
+<instance part="+3V9" gate="1" x="119.38" y="58.42"/>
 </instances>
 <busses>
 </busses>
@@ -19673,6 +19749,11 @@ Grid 2.54 mm&lt;p&gt;
 <wire x1="114.3" y1="-7.62" x2="86.36" y2="-7.62" width="0.1524" layer="91"/>
 <junction x="86.36" y="-7.62"/>
 <junction x="114.3" y="-7.62"/>
+</segment>
+<segment>
+<pinref part="T2" gate="G$1" pin="E"/>
+<wire x1="119.38" y1="33.02" x2="119.38" y2="30.48" width="0.1524" layer="91"/>
+<label x="119.38" y="30.48" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="RESET" class="0">
@@ -20063,6 +20144,12 @@ Grid 2.54 mm&lt;p&gt;
 <pinref part="U1" gate="G$1" pin="PB1(OC1A)"/>
 <wire x1="210.82" y1="64.77" x2="215.9" y2="64.77" width="0.1524" layer="91"/>
 <label x="213.36" y="64.77" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="100.33" y1="38.1" x2="96.52" y2="38.1" width="0.1524" layer="91"/>
+<label x="96.52" y="38.1" size="1.778" layer="95"/>
+<pinref part="R19" gate="G$1" pin="2"/>
+<junction x="100.33" y="38.1"/>
 </segment>
 </net>
 <net name="D10" class="0">
@@ -20579,6 +20666,12 @@ Grid 2.54 mm&lt;p&gt;
 <pinref part="+3V8" gate="1" pin="+5V"/>
 <junction x="106.68" y="-17.78"/>
 </segment>
+<segment>
+<pinref part="SG1" gate="G$1" pin="+"/>
+<wire x1="119.38" y1="53.34" x2="119.38" y2="55.88" width="0.1524" layer="91"/>
+<label x="119.38" y="55.88" size="1.778" layer="95"/>
+<pinref part="+3V9" gate="1" pin="+5V"/>
+</segment>
 </net>
 <net name="N$10" class="0">
 <segment>
@@ -20696,6 +20789,22 @@ Grid 2.54 mm&lt;p&gt;
 <wire x1="285.75" y1="-8.89" x2="285.75" y2="-7.62" width="0.1524" layer="91"/>
 <pinref part="K2" gate="2" pin="O"/>
 <wire x1="285.75" y1="-7.62" x2="281.94" y2="-7.62" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$27" class="0">
+<segment>
+<pinref part="T2" gate="G$1" pin="B"/>
+<wire x1="110.49" y1="38.1" x2="114.3" y2="38.1" width="0.1524" layer="91"/>
+<pinref part="R19" gate="G$1" pin="1"/>
+<junction x="110.49" y="38.1"/>
+<junction x="114.3" y="38.1"/>
+</segment>
+</net>
+<net name="N$29" class="0">
+<segment>
+<pinref part="T2" gate="G$1" pin="C"/>
+<pinref part="SG1" gate="G$1" pin="-"/>
+<wire x1="119.38" y1="43.18" x2="119.38" y2="45.72" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
