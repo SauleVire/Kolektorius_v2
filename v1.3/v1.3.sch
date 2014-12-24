@@ -17428,7 +17428,11 @@ Used, eg, on the Arduino Pro/ Pro Mini boards.&lt;br&gt;
 <part name="C3" library="rcl" deviceset="C-EU" device="C0805" value="0.1u"/>
 <part name="GND10" library="SparkFun" deviceset="GND" device=""/>
 <part name="X1" library="crystal" deviceset="CRYSTAL" device="TC26H" value="32.768kHz"/>
+<<<<<<< HEAD
 <part name="ISP" library="pinhead" deviceset="PINHD-2X3" device="" value=" isp"/>
+=======
+<part name="ISP" library="pinhead" deviceset="PINHD-2X3" device="" value=" "/>
+>>>>>>> origin/master
 <part name="IC1" library="SparkFun" deviceset="V_REG_LM1117" device="SOT223" value="LM1117-33"/>
 <part name="USB" library="adafruit" deviceset="USB" device="MOLEX" value=" "/>
 <part name="GND16" library="SparkFun" deviceset="GND" device=""/>
@@ -17446,7 +17450,11 @@ Used, eg, on the Arduino Pro/ Pro Mini boards.&lt;br&gt;
 <part name="R9" library="rcl" deviceset="R-EU_" device="R0805" value="2k"/>
 <part name="GND4" library="SparkFun" deviceset="GND" device=""/>
 <part name="+3V3" library="supply1" deviceset="+5V" device=""/>
+<<<<<<< HEAD
 <part name="RESET" library="SparkFun-Electromechanical" deviceset="TAC_SWITCH" device="PTH"/>
+=======
+<part name="RST" library="SparkFun-Electromechanical" deviceset="TAC_SWITCH" device="PTH" value=" "/>
+>>>>>>> origin/master
 <part name="GND9" library="SparkFun" deviceset="GND" device=""/>
 <part name="R116" library="rcl" deviceset="R-EU_" device="R0805" value="10k"/>
 <part name="+3V7" library="supply1" deviceset="+5V" device=""/>
@@ -17506,7 +17514,10 @@ Used, eg, on the Arduino Pro/ Pro Mini boards.&lt;br&gt;
 <part name="ENC28J60" library="pinhead" deviceset="PINHD-2X5" device="" value=" "/>
 <part name="+3V2" library="supply1" deviceset="+5V" device=""/>
 <part name="X8" library="con-phoenix-254" deviceset="MPT2" device="" value="  "/>
+<<<<<<< HEAD
 <part name="GND7" library="SparkFun" deviceset="GND" device=""/>
+=======
+>>>>>>> origin/master
 </parts>
 <sheets>
 <sheet>
@@ -17576,7 +17587,11 @@ Used, eg, on the Arduino Pro/ Pro Mini boards.&lt;br&gt;
 </instance>
 <instance part="GND4" gate="1" x="181.61" y="29.21"/>
 <instance part="+3V3" gate="1" x="224.79" y="34.29" rot="R270"/>
+<<<<<<< HEAD
 <instance part="RESET" gate="S" x="78.74" y="77.47" smashed="yes">
+=======
+<instance part="RST" gate="S" x="78.74" y="77.47" smashed="yes">
+>>>>>>> origin/master
 <attribute name="NAME" x="74.93" y="82.55" size="1.778" layer="95"/>
 <attribute name="VALUE" x="76.2" y="71.12" size="1.778" layer="96"/>
 </instance>
@@ -17716,7 +17731,10 @@ Used, eg, on the Arduino Pro/ Pro Mini boards.&lt;br&gt;
 <instance part="+3V2" gate="1" x="91.44" y="72.39" rot="R90"/>
 <instance part="X8" gate="-1" x="170.18" y="100.33"/>
 <instance part="X8" gate="-2" x="170.18" y="96.52"/>
+<<<<<<< HEAD
 <instance part="GND7" gate="1" x="217.17" y="121.92"/>
+=======
+>>>>>>> origin/master
 </instances>
 <busses>
 </busses>
@@ -17777,10 +17795,17 @@ Used, eg, on the Arduino Pro/ Pro Mini boards.&lt;br&gt;
 <junction x="86.36" y="46.99"/>
 </segment>
 <segment>
+<<<<<<< HEAD
 <pinref part="RESET" gate="S" pin="2"/>
 <pinref part="GND9" gate="1" pin="GND"/>
 <wire x1="73.66" y1="73.66" x2="73.66" y2="74.93" width="0.1524" layer="91"/>
 <pinref part="RESET" gate="S" pin="1"/>
+=======
+<pinref part="RST" gate="S" pin="2"/>
+<pinref part="GND9" gate="1" pin="GND"/>
+<wire x1="73.66" y1="73.66" x2="73.66" y2="74.93" width="0.1524" layer="91"/>
+<pinref part="RST" gate="S" pin="1"/>
+>>>>>>> origin/master
 <wire x1="73.66" y1="77.47" x2="73.66" y2="74.93" width="0.1524" layer="91"/>
 <junction x="73.66" y="73.66"/>
 <junction x="73.66" y="74.93"/>
@@ -17837,6 +17862,14 @@ Used, eg, on the Arduino Pro/ Pro Mini boards.&lt;br&gt;
 <junction x="81.28" y="109.22"/>
 </segment>
 <segment>
+<<<<<<< HEAD
+=======
+<pinref part="T2" gate="G$1" pin="E"/>
+<wire x1="217.17" y1="124.46" x2="217.17" y2="121.92" width="0.1524" layer="91"/>
+<label x="217.17" y="121.92" size="1.778" layer="95"/>
+</segment>
+<segment>
+>>>>>>> origin/master
 <wire x1="31.75" y1="110.49" x2="31.75" y2="114.3" width="0.1524" layer="91"/>
 <pinref part="GND2" gate="1" pin="GND"/>
 <pinref part="U$1" gate="G$1" pin="GND'"/>
@@ -17878,11 +17911,14 @@ Used, eg, on the Arduino Pro/ Pro Mini boards.&lt;br&gt;
 <wire x1="175.26" y1="114.3" x2="181.61" y2="114.3" width="0.1524" layer="91"/>
 <label x="182.88" y="114.3" size="1.778" layer="95"/>
 </segment>
+<<<<<<< HEAD
 <segment>
 <pinref part="T2" gate="G$1" pin="E"/>
 <pinref part="GND7" gate="1" pin="GND"/>
 <junction x="217.17" y="124.46"/>
 </segment>
+=======
+>>>>>>> origin/master
 </net>
 <net name="RESET" class="0">
 <segment>
@@ -17901,8 +17937,13 @@ Used, eg, on the Arduino Pro/ Pro Mini boards.&lt;br&gt;
 <pinref part="R116" gate="G$1" pin="1"/>
 <wire x1="87.63" y1="82.55" x2="87.63" y2="77.47" width="0.1524" layer="91"/>
 <label x="93.98" y="78.74" size="1.778" layer="95"/>
+<<<<<<< HEAD
 <pinref part="RESET" gate="S" pin="4"/>
 <pinref part="RESET" gate="S" pin="3"/>
+=======
+<pinref part="RST" gate="S" pin="4"/>
+<pinref part="RST" gate="S" pin="3"/>
+>>>>>>> origin/master
 <wire x1="83.82" y1="77.47" x2="83.82" y2="74.93" width="0.1524" layer="91"/>
 <wire x1="87.63" y1="77.47" x2="83.82" y2="77.47" width="0.1524" layer="91"/>
 <junction x="83.82" y="77.47"/>
